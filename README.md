@@ -31,11 +31,11 @@
 - `23.5` с - ддля всех пользователей (100000).
 
 ### Состав репозитория:
-- `skillbox_recommender.ipynb` - ноутбук с решением
-- `recommender.py` - модуль, включающий класс модели Recommender
-- `functions.py` - библиотека вспомогательных функций
-- `multiproc.py` - скрипт параллельных вычисления
-- `average_precision.py` - [библиотека](https://github.com/benhamner/Metrics/blob/9a637aea795dc6f2333f022b0863398de0a1ca77/Python/ml_metrics/average_precision.py) для расчёта усредненных метрик точности авторства [Wendy Kan](https://github.com/wendykan).
-- `kaggle.py` - библиотека взаимодействия с платформой Kaggle 
-- `main.py` - скрипт dashboard для тестирования и демонстрации модели
-- `run.py` - скрипт запуска dashboard
+- [skillbox_recommender.ipynb](skillbox_recommender.ipynb) - ноутбук с решением
+- [recommender.py](recommender.py) - модуль, включающий класс модели Recommender
+- [functions.py](functions.py) - библиотека вспомогательных функций
+- [multiproc.py](multiproc.py) - скрипт параллельных вычисления
+- [average_precision.py](average_precision.py) - [библиотека](https://github.com/benhamner/Metrics/blob/9a637aea795dc6f2333f022b0863398de0a1ca77/Python/ml_metrics/average_precision.py) для расчёта усредненных метрик точности авторства [Wendy Kan](https://github.com/wendykan).
+- [kaggle.py](kaggle.py) - библиотека взаимодействия с платформой Kaggle 
+- [main.py](main.py) - скрипт dashboard для тестирования и демонстрации модели
+- [run.py](run.py) - скрипт запуска dashboard
