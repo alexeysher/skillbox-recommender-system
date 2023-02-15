@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 import sys
 from pathlib import Path
 from pickle import dump, load
@@ -14,7 +15,6 @@ DATA_PATH = Path(sys.argv[1])  # Путь к папке данных
 TRANSACTIONS_PATH = DATA_PATH / 'transactions.csv'  # Путь к файлу логов транзакций
 PRODUCTS_PATH = DATA_PATH / 'products.csv'  # Путь к файлу справочника продуктов
 WORKERS = int(sys.argv[2])  # Количество процессов параллельных вычислений
-
 QUARTILES_COMBINATIONS = [[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [0, 0, 1, 0],
@@ -122,14 +122,14 @@ def prepare_data():
             file_path = TRANSACTIONS_PATH.with_suffix('.dmp')
             with open(file_path, 'rb') as fp:
                 transactions = load(fp)
-            orders = transactions[['user_id', 'order_number']]\
+            orders = transactions[['user_id', 'order_number']] \
                 .groupby(['user_id', 'order_number']).head(1)
             quartile_size = orders.shape[0] // 4
             for index in range(1, 5):
                 start_iloc = (index - 1) * quartile_size
                 end_iloc = start_iloc + quartile_size if index < 4 else -1
                 orders_quartile = orders.iloc[start_iloc: end_iloc]
-                transactions_quartile = transactions\
+                transactions_quartile = transactions \
                     .merge(orders_quartile, on=['user_id', 'order_number'], how='right')
                 file_path = TRANSACTIONS_PATH.with_name(f'transactions_{index}.dmp')
                 with open(file_path, 'wb') as fp:
@@ -192,14 +192,26 @@ def main():
                                     "25-100% (2, 3, 4 квартиль)", "0-100%"]
     with st.sidebar:
         quartiles_combination_label = st.radio('Набор данных:', quartiles_combination_labels, horizontal=True)
-
-    quartiles_combination = QUARTILES_COMBINATIONS[quartiles_combination_labels.index(quartiles_combination_label)]
-    file_path = DATA_PATH / f'recommender_{quartiles_combination}.dmp'
-    with open(file_path, 'rb') as fp:
-        recommender = load(fp)
-    learning_tab, total_prediction_tab, user_prediction_tab = \
-        st.tabs(['Обучение модели', 'Предсказание для всех пользователей', 'Предсказание для отдельных пользователей'])
-    with learning_tab:
+        quartiles_combination = QUARTILES_COMBINATIONS[quartiles_combination_labels.index(quartiles_combination_label)]
+    if 'quartiles_combination' not in st.session_state:
+        need_load = True
+    elif st.session_state['quartiles_combination'] != quartiles_combination:
+        need_load = True
+    else:
+        need_load = False
+        recommender = st.session_state['recommender']
+    if need_load:
+        file_path = DATA_PATH / f'recommender_{quartiles_combination}.dmp'
+        with open(file_path, 'rb') as fp:
+            recommender = load(fp)
+        st.session_state['quartiles_combination'] = quartiles_combination
+        st.session_state['recommender'] = recommender
+    choice = option_menu('', ['Обучение модели', 'Рекомендации для всех пользователей',
+                              'Рекомендации для отдельных пользователей'],
+                         icons=['tools', 'people', 'person'],
+                         orientation='horizontal',
+                         styles={"container": {"padding": "5!important", "background-color": "#fafafa"}})
+    if choice == 'Обучение модели':
         days_rate, days_map10 = recommender.get_rate('days')
         days_rates, days_map10_true, days_map10_predicted = recommender.get_map10_by_rate_approximations('days')
         cart_rate, cart_map10 = recommender.get_rate('cart')
@@ -274,7 +286,7 @@ def main():
                 end_time = time.time()
                 exec_time = end_time - start_time
                 st.metric('Время выполнения', f'{exec_time:.3f} с')
-    with total_prediction_tab:
+    elif choice == 'Предсказание для всех пользователей':
         c1, c2, c3, _ = st.columns([17, 18, 25, 40], gap='large')
         k = c1.number_input('Размер рекомендаций', 1, 10, key='total_k')
         if c2.button('Сформировать рекомендации...', key='total_predict'):
@@ -286,13 +298,13 @@ def main():
                 exec_time = end_time - start_time
                 st.metric('Время выполнения', f'{exec_time:.3f} с')
             recommendation.index.name = 'ИН'
-            recommendation.columns = [f'Продукт #{i}' for i in range(1, k+1)]
+            recommendation.columns = [f'Продукт #{i}' for i in range(1, k + 1)]
             st.dataframe(recommendation, use_container_width=True)
-    with user_prediction_tab:
+    else:
         c1, c2, c3, c4 = st.columns([40, 17, 18, 25], gap='large')
         user_ids = c1.multiselect('ИН пользователей', recommender.get_users())
         k = c2.number_input('Размер рекомендаций', 1, 10, key='user_k')
-        if c3.button('Сформировать рекомендации...', key='user_predict'):
+        if c3.button('Сформировать рекомендации...', key='user_predict', disabled=len(user_ids) == 0):
             with c4:
                 start_time = time.time()
                 with st.spinner('Формирование рекомендаций...'):
