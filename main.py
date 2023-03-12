@@ -1,9 +1,14 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 from auxilary import hide_menu_button, remove_blank_space, set_text_style, InstacartColors
+
+
 # from docs import intro, goals, features, filtering, filling, test,
 
 def intro():
+    """
+    Титульная страница.
+    """
     title = set_text_style('<b>Рекомендательная система для онлайн-гипермаркета Instacart</b>', font_size=80)
     st.markdown(title, unsafe_allow_html=True)
     st.markdown(set_text_style('&nbsp;', font_size=32), unsafe_allow_html=True)
