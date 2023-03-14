@@ -1,7 +1,7 @@
 from pathlib import Path
 import streamlit as st
 
-from auxilary import set_text_style, InstacartColors
+from auxiliary import set_text_style, InstacartColors
 
 DATA_PATH = Path('D:/skillbox-recommender-system/data')  # Путь к папке данных
 
@@ -25,8 +25,6 @@ def load_data():
 
 @st.cache_resource
 def plot_aisle_rank_hist(missed_last_products):
-    import matplotlib.pyplot as plt
-    from auxilary import InstacartColors
 
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     bins = int(missed_last_products['aisle_rank'].max())
@@ -41,7 +39,7 @@ def plot_aisle_rank_hist(missed_last_products):
 @st.cache_resource
 def plot_in_aisle_rank_hist(missed_last_products):
     import matplotlib.pyplot as plt
-    from auxilary import InstacartColors
+    from auxiliary import InstacartColors
 
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     bins = int(missed_last_products['inside_aisle_rank'].max())
