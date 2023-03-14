@@ -1,6 +1,6 @@
 from pathlib import Path
 import streamlit as st
-from auxilary import set_text_style, InstacartColors
+from auxiliary import set_text_style, InstacartColors
 
 DATA_PATH = Path('D:/skillbox-recommender-system/data')  # Путь к папке данных
 
@@ -24,8 +24,6 @@ def load_data():
 
 @st.cache_resource
 def plot_reordering_prop(products_reordering):
-    import matplotlib.pyplot as plt
-    from auxilary import InstacartColors
 
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     prior_ordered_fraction = products_reordering['days_before_last_order'].count() / \
