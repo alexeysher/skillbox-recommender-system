@@ -2,7 +2,7 @@ from pathlib import Path
 import streamlit as st
 import matplotlib.pyplot as plt
 
-from auxilary import set_text_style, InstacartColors
+from auxiliary import set_text_style, InstacartColors
 
 DATA_PATH = Path('D:/skillbox-recommender-system/data')  # Путь к папке данных
 TRANSACTIONS_PATH = DATA_PATH / 'transactions.csv'  # Путь к файлу логов транзакций
