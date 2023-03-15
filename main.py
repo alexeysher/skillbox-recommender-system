@@ -503,7 +503,7 @@ def filtering():
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
     fig = plot_days()
-    # c2.pyplot(fig)
+    c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
                                font_size=24, text_align='center')
@@ -548,8 +548,8 @@ def filtering():
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    # fig = plot_cart(map10_cart, cart_map10, map10_cart_pred, cart_rate)
-    # c2.pyplot(fig)
+    fig = plot_cart(map10_cart, cart_map10, map10_cart_pred, cart_rate)
+    c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
                                font_size=24, text_align='center')
@@ -564,12 +564,12 @@ def filtering():
     col_title = 'Популярность' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
                 '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
     col_title = set_text_style(col_title, font_size=24, text_align='center')
-    # fig = plot_missed_hist(missed_last_products)
+    fig = plot_missed_hist(missed_last_products)
     col_title = set_text_style('Распределение глобального ранга среди продуктов, '
                                'не попавших в рекомендации',
                                font_size=24, text_align='center')
     c1.markdown(col_title, unsafe_allow_html=True)
-    # c1.pyplot(fig)
+    c1.pyplot(fig)
     c1.markdown(col_title, unsafe_allow_html=True)
     c1.markdown('---')
     c1.latex('\large r^g_i={\sum_{u \in U}r_{u,i} \over |U|}')
@@ -585,18 +585,18 @@ def filtering():
         '''
     )
     c1.markdown('---')
-    # map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
-    #               set_text_style(f'{total_map10:.6f} ', font_size=32, tag='span') + \
-    #               set_text_style(f'▲{total_map10 - cart_map10:.6f}', font_size=24, color=InstacartColors.Lime,
-    #                              tag='span') + '**'
-    # c1.markdown(map10_value, unsafe_allow_html=True)
-    #
+    map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
+                  set_text_style(f'{total_map10:.6f} ', font_size=32, tag='span') + \
+                  set_text_style(f'▲{total_map10 - cart_map10:.6f}', font_size=24, color=InstacartColors.Lime,
+                                 tag='span') + '**'
+    c1.markdown(map10_value, unsafe_allow_html=True)
+
     col_title = set_text_style('Зависимость точности предсказаний '
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    # fig = plot_total(map10_total, total_map10, map10_total_pred, total_rate)
-    # c2.pyplot(fig)
+    fig = plot_total(map10_total, total_map10, map10_total_pred, total_rate)
+    c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
                                font_size=24, text_align='center')
@@ -641,9 +641,9 @@ def filling():
     | $U$         | множество номеров пользователей в транзакциях               |
         ''', unsafe_allow_html=True)
 
-    # col_title = 'Количество' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
-    #             '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
-    # col_title = set_text_style(col_title, font_size=24, text_align='center')
+    col_title = 'Количество' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
+                '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
+    col_title = set_text_style(col_title, font_size=24, text_align='center')
 
     c1, c2 = st.columns(2, gap='large')
     c1.markdown('---')
@@ -660,13 +660,6 @@ def filling():
     c2.markdown(col_title, unsafe_allow_html=True)
     fig = plot_in_aisle_rank_hist(missed_last_products)
     c2.pyplot(fig)
-
-    st.markdown('---')
-    # map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
-    #               set_text_style(f'{filled_up_map10:.6f} ', font_size=32, tag='span') + \
-    #               set_text_style(f'▲{filled_up_map10 - total_map10:.6f}', font_size=24, color=InstacartColors.Lime,
-    #                              tag='span') + '**'
-    # st.markdown(map10_value, unsafe_allow_html=True)
 
 
 def test():
