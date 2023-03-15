@@ -85,6 +85,9 @@ def prepare_data():
     del missed_last_products
 
     test_results = load_data('test_results')
+    test_results.info()
+    print(test_results)
+
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
     del products_reordering
