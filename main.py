@@ -72,7 +72,7 @@ def prepare_data():
     frequency_map_10 = load_data('frequency_map_10')
     frequency_ratings = load_data('frequency_ratings')
     plot_ratings_hist()
-    del frequency_map_10
+    # del frequency_map_10
     del frequency_ratings
 
     # for file_name in [
