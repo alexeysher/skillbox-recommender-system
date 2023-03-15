@@ -47,6 +47,7 @@ total_rate = 0.
 missed_last_products = pd.DataFrame()
 
 test_results = pd.DataFrame()
+test_results_ = pd.DataFrame()
 
 
 def load_data(var_name: str):
@@ -75,7 +76,7 @@ def prepare_data():
         map10_days, map10_cart, map10_total, \
         map10_days_pred, map10_cart_pred, map10_total_pred, \
         days_rate, cart_rate, total_rate, \
-        missed_last_products, test_results
+        missed_last_products, test_results, test_results_
 
 
     missed_last_products = load_data('missed_last_products')
@@ -87,6 +88,7 @@ def prepare_data():
     test_results = load_data('test_results')
     test_results.info()
     print(test_results)
+    test_results_ = test_results.copy()
 
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
@@ -673,24 +675,24 @@ def test():
 | Тип обработки | publicScore | privateScore | meanScore |
 |---------------|-------------|--------------|-----------|
 '''
-    test_results.info()
-    print(test_results['description'])
+    test_results_.info()
+    print(test_results_['description'])
     # for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
     #     table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
     description, publicScore, privateScore, meanScore = \
-        test_results.loc[4, ['description', 'publicScore', 'privateScore', 'meanScore']]
+        test_results_.loc[4, ['description', 'publicScore', 'privateScore', 'meanScore']]
     table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
              f'|**:orange[{privateScore:.5f}]**|**:orange[{meanScore:.5f}]**|'
     st.markdown(table)
 
     st.markdown('---')
 
-    test_results['color'] = InstacartColors.IllustrationBlue
-    test_results.at[test_results['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
+    test_results_['color'] = InstacartColors.IllustrationBlue
+    test_results_.at[test_results_['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
-    test_results.plot(
+    test_results_.plot(
         ax=ax,
-        kind='barh', x='description', y='meanScore', color=test_results['color'],
+        kind='barh', x='description', y='meanScore', color=test_results_['color'],
         title={}, xlabel='', ylabel='',
         grid=True, fontsize=10, legend=False)
     ax.set_xlabel('$MAP@10$')
