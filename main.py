@@ -1,5 +1,6 @@
 import shutil
 
+import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 import matplotlib.pyplot as plt
@@ -10,33 +11,42 @@ import gdown
 
 DATA_PATH = 'data'  # Путь к папке данных
 
-products_reordering = None
-products_reordering_percentages = None
-days_bins = None
-days_total_counts = None
-days_reordered_counts = None
-cart_bins = None
-cart_total_counts = None
-cart_reordered_counts = None
-frequency_ratings = None
-days_ratings = None
-cart_ratings = None
-total_ratings = None
+products_reordering = pd.DataFrame()
+products_reordering_percentages = pd.DataFrame()
 
-frequency_map_10 = None
-days_rate = None
-days_map10 = None
-map10_days = None
-map10_days_pred = None
-cart_rate = None
-cart_map10 = None
-map10_cart = None
-map10_cart_pred = None
-total_rate = None
-total_map10 = None
-map10_total = None
-map10_total_pred = None
-missed_last_products = None
+days_bins = []
+days_total_counts = []
+days_reordered_counts = []
+
+cart_bins = []
+cart_total_counts = []
+cart_reordered_counts = []
+
+frequency_ratings = pd.DataFrame()
+days_ratings = pd.DataFrame()
+cart_ratings = pd.DataFrame()
+total_ratings = pd.DataFrame()
+
+frequency_map_10 = 0.
+days_map10 = 0.
+cart_map10 = 0.
+total_map10 = 0.
+
+map10_days = pd.Series()
+map10_cart = pd.Series()
+map10_total = pd.Series()
+
+map10_days_pred = 0.
+map10_cart_pred = 0.
+map10_total_pred = 0.
+
+days_rate = 0.
+cart_rate = 0.
+total_rate = 0.
+
+missed_last_products = pd.DataFrame()
+
+test_results = pd.DataFrame()
 
 
 def load_data(var_name: str):
@@ -61,16 +71,20 @@ def prepare_data():
         days_bins, days_total_counts, days_reordered_counts, \
         cart_bins, cart_total_counts, cart_reordered_counts, \
         frequency_ratings, days_ratings, cart_ratings, total_ratings, \
-        frequency_map_10
+        frequency_map_10, days_map10, cart_map10, total_map10, \
+        map10_days, map10_cart, map10_total, \
+        map10_days_pred, map10_cart_pred, map10_total_pred, \
+        days_rate, cart_rate, total_rate, \
+        missed_last_products, test_results
 
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
     del products_reordering
-    
+
     products_reordering_percentages = load_data('products_reordering_percentages')
     plot_reordering_hist()
     del products_reordering_percentages
-    
+
     days_bins = load_data('days_bins')
     days_total_counts = load_data('days_total_counts')
     days_reordered_counts = load_data('days_reordered_counts')
@@ -101,32 +115,41 @@ def prepare_data():
     del frequency_ratings
 
     frequency_map_10 = load_data('frequency_map_10')
-    # del frequency_map_10
+    days_map10 = load_data('days_map10')
+    cart_map10 = load_data('cart_map10')
+    total_map10 = load_data('total_map10')
 
-    # for file_name in [
-    #     'days_rate.dmp',
-    #     'days_map10.dmp',
-    #     'map10_days.dmp',
-    #     'map10_days_pred.dmp',
-    #     'cart_rate.dmp',
-    #     'cart_map10.dmp',
-    #     'map10_cart.dmp',
-    #     'map10_cart_pred.dmp',
-    #     'total_rate.dmp',
-    #     'total_map10.dmp',
-    #     'map10_total.dmp',
-    #     'map10_total_pred.dmp',
-    #     'missed_last_products.dmp',
-    #     'test_results.dmp',
-    #     # 'filled_up_map10.dmp',
-    #     # 'total_map10.dmp',
-    # ]:
-    #     file_path = data_path / file_name
-    #     with open(file_path, 'rb') as fp:
-    #         data.append(load(fp))
-    # shutil.rmtree(data_path)
-    # data_zip_file.unlink()
-    # return data
+    map10_days = load_data('map10_days')
+    map10_days_pred = load_data('map10_days_pred')
+    days_rate = load_data('days_rate')
+    plot_days()
+    del map10_days
+    del map10_days_pred
+    del days_rate
+
+    map10_cart = load_data('map10_cart')
+    map10_cart_pred = load_data('map10_cart_pred')
+    cart_rate = load_data('cart_rate')
+    plot_cart()
+    del map10_cart
+    del map10_cart_pred
+    del cart_rate
+
+    map10_total = load_data('map10_total')
+    map10_total_pred = load_data('map10_total_pred')
+    total_rate = load_data('total_rate')
+    plot_total()
+    del map10_total
+    del map10_total_pred
+    del total_rate
+
+    missed_last_products = load_data('missed_last_products')
+    plot_missed_hist()
+    plot_aisle_rank_hist()
+    plot_in_aisle_rank_hist()
+    del missed_last_products
+
+    test_results = load_data('test_results')
 
 
 @st.cache_resource
@@ -218,10 +241,10 @@ def plot_days_hist():
 
 
 @st.cache_resource
-def plot_days(map10_days, days_map10, _map10_days_pred, days_rate):
+def plot_days():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     ax.plot(map10_days, color=InstacartColors.IllustrationBlue, linewidth=2)
-    ax.plot(map10_days.index.values, _map10_days_pred, linestyle='--', color=InstacartColors.IllustrationPink,
+    ax.plot(map10_days.index.values, map10_days_pred, linestyle='--', color=InstacartColors.IllustrationPink,
             linewidth=2)
     ax.scatter(days_rate, days_map10, color=InstacartColors.IllustrationRed, linewidth=1)
     ax.axvline(days_rate, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
@@ -234,10 +257,10 @@ def plot_days(map10_days, days_map10, _map10_days_pred, days_rate):
 
 
 @st.cache_resource
-def plot_cart(map10_cart, cart_map10, _map10_cart_pred, cart_rate):
+def plot_cart():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     ax.plot(map10_cart, color=InstacartColors.IllustrationBlue, linewidth=2)
-    ax.plot(map10_cart.index.values, _map10_cart_pred, linestyle='--', color=InstacartColors.IllustrationPink,
+    ax.plot(map10_cart.index.values, map10_cart_pred, linestyle='--', color=InstacartColors.IllustrationPink,
             linewidth=2)
     ax.scatter(cart_rate, cart_map10, color=InstacartColors.IllustrationRed, linewidth=1)
     ax.axvline(cart_rate, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
@@ -263,10 +286,10 @@ def plot_cart_hist():
 
 
 @st.cache_resource
-def plot_total(map10_total, total_map10, _map10_total_pred, total_rate):
+def plot_total():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     ax.plot(map10_total, color=InstacartColors.IllustrationBlue, linewidth=2)
-    ax.plot(map10_total.index.values, _map10_total_pred, linestyle='--', color=InstacartColors.IllustrationPink,
+    ax.plot(map10_total.index.values, map10_total_pred, linestyle='--', color=InstacartColors.IllustrationPink,
             linewidth=2)
     ax.scatter(total_rate, total_map10, color=InstacartColors.IllustrationRed, linewidth=1)
     ax.axvline(total_rate, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
@@ -292,7 +315,7 @@ def plot_total_hist():
 
 
 @st.cache_resource
-def plot_missed_hist(missed_last_products):
+def plot_missed_hist():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     bins = range(0, 1001, 10)
     ax.hist(missed_last_products['total_rank'], color=InstacartColors.IllustrationBlue, bins=bins)
@@ -304,7 +327,7 @@ def plot_missed_hist(missed_last_products):
 
 
 @st.cache_resource
-def plot_aisle_rank_hist(missed_last_products):
+def plot_aisle_rank_hist():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     bins = int(missed_last_products['aisle_rank'].max())
     ax.hist(missed_last_products['aisle_rank'], color=InstacartColors.IllustrationBlue, bins=bins)
@@ -316,7 +339,7 @@ def plot_aisle_rank_hist(missed_last_products):
 
 
 @st.cache_resource
-def plot_in_aisle_rank_hist(missed_last_products):
+def plot_in_aisle_rank_hist():
     import matplotlib.pyplot as plt
     from auxiliary import InstacartColors
 
@@ -479,7 +502,7 @@ def filtering():
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    # fig = plot_days(map10_days, days_map10, map10_days_pred, days_rate)
+    fig = plot_days()
     # c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
@@ -515,11 +538,11 @@ def filtering():
         '''
     )
     c1.markdown('---')
-    # map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
-    #               set_text_style(f'{cart_map10:.6f} ', font_size=32, tag='span') + \
-    #               set_text_style(f'▲{cart_map10 - days_map10:.6f}', font_size=24, color=InstacartColors.Lime,
-    #                              tag='span') + '**'
-    # c1.markdown(map10_value, unsafe_allow_html=True)
+    map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
+                  set_text_style(f'{cart_map10:.6f} ', font_size=32, tag='span') + \
+                  set_text_style(f'▲{cart_map10 - days_map10:.6f}', font_size=24, color=InstacartColors.Lime,
+                                 tag='span') + '**'
+    c1.markdown(map10_value, unsafe_allow_html=True)
     #
     col_title = set_text_style('Зависимость точности предсказаний '
                                'от коэффициента фильтрации',
@@ -582,7 +605,7 @@ def filtering():
     c2.pyplot(fig)
 
 
-def filling(missed_last_products):
+def filling():
     st.markdown(
         '**' + set_text_style('Заполнение', font_size=48, color=InstacartColors.Carrot, text_align='center') +
         '**', unsafe_allow_html=True)
@@ -646,7 +669,7 @@ def filling(missed_last_products):
     # st.markdown(map10_value, unsafe_allow_html=True)
 
 
-def test(test_results):
+def test():
     st.markdown('**' + set_text_style('Результаты проверки на платформе Kaggle', font_size=48,
                                       color=InstacartColors.Carrot, text_align='center') + '**',
                 unsafe_allow_html=True)
@@ -720,12 +743,7 @@ match choice:
         features()
     case "Фильтрация":
         filtering()
-        # filtering(frequency_map_10,
-        #           days_rate, days_map10, map10_days, map10_days_pred,
-        #           cart_rate, cart_map10, map10_cart, map10_cart_pred,
-        #           total_rate, total_map10, map10_total, map10_total_pred,
-        #           missed_last_products)
-    # case "Заполнение":
-    #     filling(missed_last_products)
-    # case "Тестирование":
-    #     test(test_results)
+    case "Заполнение":
+        filling()
+    case "Тестирование":
+        test()
