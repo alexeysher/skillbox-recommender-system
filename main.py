@@ -10,55 +10,71 @@ import gdown
 
 DATA_PATH = 'data'  # Путь к папке данных
 
+products_reordering = None
 
-@st.cache_data(show_spinner='Загрузка данных...')
-def load_data():
-    # data_zip_file = Path('tmp.zip')
-    # gdown.cached_download(st.secrets['data']['url'], path=data_zip_file.as_posix(), postprocess=gdown.extractall,
-    #                       fuzzy=True)
-    # data_path = Path(DATA_PATH)
-    data = []
-    for file_name in [
-        'products_reordering.dmp',
-        'products_reordering_percentages.dmp',
-        'days_bins.dmp',
-        'days_total_counts.dmp',
-        'days_reordered_counts.dmp',
-        'cart_bins.dmp',
-        'cart_total_counts.dmp',
-        'cart_reordered_counts.dmp',
-        'frequency_ratings.dmp',
-        'frequency_map_10.dmp',
-        'days_rate.dmp',
-        'days_ratings.dmp',
-        'days_map10.dmp',
-        'map10_days.dmp',
-        'map10_days_pred.dmp',
-        'cart_rate.dmp',
-        'cart_ratings.dmp',
-        'cart_map10.dmp',
-        'map10_cart.dmp',
-        'map10_cart_pred.dmp',
-        'total_rate.dmp',
-        'total_ratings.dmp',
-        'total_map10.dmp',
-        'map10_total.dmp',
-        'map10_total_pred.dmp',
-        'missed_last_products.dmp',
-        'test_results.dmp',
-        # 'filled_up_map10.dmp',
-        # 'total_map10.dmp',
-    ]:
-        file_path = data_path / file_name
-        with open(file_path, 'rb') as fp:
-            data.append(load(fp))
-    shutil.rmtree(data_path)
-    data_zip_file.unlink()
+
+def load_data(var_name: str):
+    zip_file = Path(var_name).with_suffix('.zip')
+    data_file = Path(var_name).with_suffix('.dmp')
+    gdown.cached_download(st.secrets['urls'][var_name], path=zip_file.as_posix(), fuzzy=True)
+    shutil.unpack_archive(zip_file, '.')
+    st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
+    st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
+
+    with open(data_file, 'rb') as fp:
+        data = load(fp)
+    zip_file.unlink()
+    data_file.unlink()
     return data
 
 
+@st.cache_data(show_spinner='Загрузка данных...')
+def prepare_data():
+    global products_reordering
+    products_reordering = load_data('products_reordering')
+    plot_reordering_prop()
+    del products_reordering
+    # for file_name in [
+    #     'products_reordering.dmp',
+    #     'products_reordering_percentages.dmp',
+    #     'days_bins.dmp',
+    #     'days_total_counts.dmp',
+    #     'days_reordered_counts.dmp',
+    #     'cart_bins.dmp',
+    #     'cart_total_counts.dmp',
+    #     'cart_reordered_counts.dmp',
+    #     'frequency_ratings.dmp',
+    #     'frequency_map_10.dmp',
+    #     'days_rate.dmp',
+    #     'days_ratings.dmp',
+    #     'days_map10.dmp',
+    #     'map10_days.dmp',
+    #     'map10_days_pred.dmp',
+    #     'cart_rate.dmp',
+    #     'cart_ratings.dmp',
+    #     'cart_map10.dmp',
+    #     'map10_cart.dmp',
+    #     'map10_cart_pred.dmp',
+    #     'total_rate.dmp',
+    #     'total_ratings.dmp',
+    #     'total_map10.dmp',
+    #     'map10_total.dmp',
+    #     'map10_total_pred.dmp',
+    #     'missed_last_products.dmp',
+    #     'test_results.dmp',
+    #     # 'filled_up_map10.dmp',
+    #     # 'total_map10.dmp',
+    # ]:
+    #     file_path = data_path / file_name
+    #     with open(file_path, 'rb') as fp:
+    #         data.append(load(fp))
+    # shutil.rmtree(data_path)
+    # data_zip_file.unlink()
+    # return data
+
+
 @st.cache_resource
-def plot_reordering_prop(products_reordering):
+def plot_reordering_prop():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     prior_ordered_fraction = products_reordering['days_before_last_order'].count() / \
                              products_reordering['days_before_last_order'].size * 100
@@ -313,7 +329,7 @@ def features(products_reordering, products_reordering_percentages,
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
     c1, c2 = st.columns(2, gap='large')
-    fig = plot_reordering_prop(products_reordering)
+    fig = plot_reordering_prop()
     c1.pyplot(fig)
     fig = plot_reordering_hist(products_reordering_percentages)
     c2.pyplot(fig)
@@ -623,7 +639,7 @@ st.set_page_config(page_title='Рекомендательная система �
 #     total_rate, total_ratings, total_map10, map10_total, map10_total_pred, \
 #     missed_last_products, test_results = load_data()
 
-load_data()
+prepare_data()
 
 with st.sidebar:
     choice = option_menu(
@@ -658,19 +674,17 @@ match choice:
         intro()
     case "Цели и задачи":
         goals()
-    case "Особенности":
-        features(products_reordering, products_reordering_percentages,
-                 days_bins, days_total_counts, days_reordered_counts,
-                 cart_bins, cart_total_counts, cart_reordered_counts)
-    case "Фильтрация":
-        filtering(frequency_ratings, frequency_map_10,
-                  days_rate, days_ratings, days_map10, map10_days, map10_days_pred,
-                  cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred,
-                  total_rate, total_ratings, total_map10, map10_total, map10_total_pred,
-                  missed_last_products)
-    case "Заполнение":
-        filling(missed_last_products)
-    case "Тестирование":
-        test(test_results)
-    # case "Прототип":
-    #     proto.main()
+    # case "Особенности":
+    #     features(products_reordering, products_reordering_percentages,
+    #              days_bins, days_total_counts, days_reordered_counts,
+    #              cart_bins, cart_total_counts, cart_reordered_counts)
+    # case "Фильтрация":
+    #     filtering(frequency_ratings, frequency_map_10,
+    #               days_rate, days_ratings, days_map10, map10_days, map10_days_pred,
+    #               cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred,
+    #               total_rate, total_ratings, total_map10, map10_total, map10_total_pred,
+    #               missed_last_products)
+    # case "Заполнение":
+    #     filling(missed_last_products)
+    # case "Тестирование":
+    #     test(test_results)
