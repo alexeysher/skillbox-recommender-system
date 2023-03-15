@@ -85,10 +85,8 @@ def prepare_data():
     plot_in_aisle_rank_hist()
     del missed_last_products
 
-    test_results = load_data('test_results')
-    test_results.info()
+    test_results = load_data('test_results').to_dict()
     print(test_results)
-    test_results_ = test_results.copy()
 
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
@@ -675,29 +673,28 @@ def test():
 | Тип обработки | publicScore | privateScore | meanScore |
 |---------------|-------------|--------------|-----------|
 '''
-    test_results_.info()
-    print(test_results_['description'])
+    print(test_results)
     # for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
     #     table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
-    description, publicScore, privateScore, meanScore = \
-        test_results_.loc[4, ['description', 'publicScore', 'privateScore', 'meanScore']]
-    table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
-             f'|**:orange[{privateScore:.5f}]**|**:orange[{meanScore:.5f}]**|'
-    st.markdown(table)
-
-    st.markdown('---')
-
-    test_results_['color'] = InstacartColors.IllustrationBlue
-    test_results_.at[test_results_['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
-    fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
-    test_results_.plot(
-        ax=ax,
-        kind='barh', x='description', y='meanScore', color=test_results_['color'],
-        title={}, xlabel='', ylabel='',
-        grid=True, fontsize=10, legend=False)
-    ax.set_xlabel('$MAP@10$')
-    _ = ax.set_xlim(0.27, 0.33)
-    st.pyplot(fig)
+    # description, publicScore, privateScore, meanScore = \
+    #     test_results_.loc[4, ['description', 'publicScore', 'privateScore', 'meanScore']]
+    # table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
+    #          f'|**:orange[{privateScore:.5f}]**|**:orange[{meanScore:.5f}]**|'
+    # st.markdown(table)
+    #
+    # st.markdown('---')
+    #
+    # test_results_['color'] = InstacartColors.IllustrationBlue
+    # test_results_.at[test_results_['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
+    # fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
+    # test_results_.plot(
+    #     ax=ax,
+    #     kind='barh', x='description', y='meanScore', color=test_results_['color'],
+    #     title={}, xlabel='', ylabel='',
+    #     grid=True, fontsize=10, legend=False)
+    # ax.set_xlabel('$MAP@10$')
+    # _ = ax.set_xlim(0.27, 0.33)
+    # st.pyplot(fig)
 
 
 st.set_page_config(page_title='Рекомендательная система для онлайн-гипермаркета Instacart',
