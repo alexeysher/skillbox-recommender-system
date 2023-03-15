@@ -77,6 +77,14 @@ def prepare_data():
         days_rate, cart_rate, total_rate, \
         missed_last_products, test_results
 
+
+    missed_last_products = load_data('missed_last_products')
+    plot_missed_hist()
+    plot_aisle_rank_hist()
+    plot_in_aisle_rank_hist()
+    del missed_last_products
+
+    test_results = load_data('test_results')
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
     del products_reordering
@@ -142,14 +150,6 @@ def prepare_data():
     del map10_total
     del map10_total_pred
     del total_rate
-
-    missed_last_products = load_data('missed_last_products')
-    plot_missed_hist()
-    plot_aisle_rank_hist()
-    plot_in_aisle_rank_hist()
-    del missed_last_products
-
-    test_results = load_data('test_results')
 
 
 @st.cache_resource
