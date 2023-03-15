@@ -24,6 +24,8 @@ def load_data(var_name: str):
         data = load(fp)
     zip_file.unlink()
     data_file.unlink()
+    st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
+    st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
     return data
 
 
