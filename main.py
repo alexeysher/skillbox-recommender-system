@@ -18,6 +18,8 @@ days_reordered_counts = None
 cart_bins = None
 cart_total_counts = None
 cart_reordered_counts = None
+frequency_map_10 = None
+frequency_ratings = None
 
 
 def load_data(var_name: str):
@@ -40,7 +42,8 @@ def load_data(var_name: str):
 def prepare_data():
     global products_reordering, products_reordering_percentages, \
         days_bins, days_total_counts, days_reordered_counts, \
-        cart_bins, cart_total_counts, cart_reordered_counts
+        cart_bins, cart_total_counts, cart_reordered_counts, \
+        frequency_map_10,frequency_ratings
 
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
@@ -66,10 +69,13 @@ def prepare_data():
     del cart_total_counts
     del cart_bins
 
+    frequency_map_10 = load_data('frequency_map_10')
+    frequency_ratings = load_data('frequency_ratings')
+    plot_ratings_hist()
+    del frequency_map_10
+    del frequency_ratings
+
     # for file_name in [
-    #     'cart_bins.dmp',
-    #     'cart_total_counts.dmp',
-    #     'cart_reordered_counts.dmp',
     #     'frequency_ratings.dmp',
     #     'frequency_map_10.dmp',
     #     'days_rate.dmp',
@@ -165,7 +171,7 @@ def plot_cart_reordering():
 
 
 @st.cache_resource
-def plot_ratings_hist(frequency_ratings, frequency_map_10):
+def plot_ratings_hist():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     bins = range(frequency_ratings['rating'].min(), frequency_ratings['rating'].max())
     ax.hist(frequency_ratings['rating'], color=InstacartColors.IllustrationBlue, bins=bins)
@@ -417,7 +423,7 @@ def filtering(frequency_ratings, frequency_map_10,
                                'ранее купленных продуктов',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_ratings_hist(frequency_ratings, frequency_map_10)
+    fig = plot_ratings_hist()
     c2.pyplot(fig)
 
     st.markdown('---')
@@ -454,107 +460,107 @@ def filtering(frequency_ratings, frequency_map_10,
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_days(map10_days, days_map10, map10_days_pred, days_rate)
-    c2.pyplot(fig)
-    col_title = set_text_style('Распределение рейтингов '
-                               'ранее купленных продуктов',
-                               font_size=24, text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_days_hist(days_ratings, frequency_ratings)
-    c2.pyplot(fig)
-
-    st.markdown('---')
-    st.markdown(
-        '**' + set_text_style('Фильтрация по номеру добавления в корзину', font_size=48, color=InstacartColors.Carrot,
-                              text_align='center') + '**', unsafe_allow_html=True)
-    c1, c2 = st.columns(2, gap='large')
-    col_title = 'Номер' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
-                '&nbsp;→&nbsp;Вес' + set_text_style('▼', tag='span', color=InstacartColors.IllustrationRed)
-    col_title = set_text_style(col_title, font_size=24, text_align='center')
-    c1.markdown(col_title, unsafe_allow_html=True)
-    c1.markdown('---')
-    c1.latex('\large w_{u,i,t} = e^{-d_{u,t}·a_d}·e^{-c_{u,i,t}·a_c}')
-    c1.latex('\large r_{u,i}=\sum_{t \in T_u}s_{u,i,t}·w_{u,i,t}')
-    c1.markdown(
-        '''
-    | Обозначение | Описание                                                                                 |
-    | ----------- | ---------------------------------------------------------------------------------------- |
-    | $w_{u,i,t}$ | вес продукта с номером $i$ в транзакции с номером $t$ пользователя с номером $u$         |
-    | $d_{u,t}$   | время совершения транзакции с номером $t$ пользователя с номером $u$                     |
-    | $a_d$       | коэффициент фильтрации (положительное число)                                             |
-    | $c_{u,i,t}$ | порядковый номер добавления продукта с номером $i$ в корзину в транзакции с номером $t$  |
-    | $a_c$       | коэффициент фильтрации по номеру добавления продукта в корзину                           |
-    | $r_{u,i}$   | рейтинг продукта с номером $i$ у пользователя с номером $u$                              |
-    | $T_u$       | номера транзакций, совершенных пользователем с номером $u$                               |
-    | $s_{u,i,t}$ | присутствие продукта с номером $i$ в транзакции с номером $t$ пользователя с номером $u$ |
-        '''
-    )
-    c1.markdown('---')
-    map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
-                  set_text_style(f'{cart_map10:.6f} ', font_size=32, tag='span') + \
-                  set_text_style(f'▲{cart_map10 - days_map10:.6f}', font_size=24, color=InstacartColors.Lime,
-                                 tag='span') + '**'
-    c1.markdown(map10_value, unsafe_allow_html=True)
-
-    col_title = set_text_style('Зависимость точности предсказаний '
-                               'от коэффициента фильтрации',
-                               font_size=24, text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_cart(map10_cart, cart_map10, map10_cart_pred, cart_rate)
-    c2.pyplot(fig)
-    col_title = set_text_style('Распределение рейтингов '
-                               'ранее купленных продуктов',
-                               font_size=24, text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_cart_hist(cart_ratings, frequency_ratings)
-    c2.pyplot(fig)
-
-    st.markdown('---')
-    st.markdown('**' + set_text_style('Фильтрация по популярности', font_size=48, color=InstacartColors.Carrot,
-                                      text_align='center') + '**', unsafe_allow_html=True)
-    c1, c2 = st.columns(2, gap='large')
-    col_title = 'Популярность' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
-                '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
-    col_title = set_text_style(col_title, font_size=24, text_align='center')
-    fig = plot_missed_hist(missed_last_products)
-    col_title = set_text_style('Распределение глобального ранга среди продуктов, '
-                               'не попавших в рекомендации',
-                               font_size=24, text_align='center')
-    c1.markdown(col_title, unsafe_allow_html=True)
-    c1.pyplot(fig)
-    c1.markdown(col_title, unsafe_allow_html=True)
-    c1.markdown('---')
-    c1.latex('\large r^g_i={\sum_{u \in U}r_{u,i} \over |U|}')
-    c1.latex('\large r^*_{u,i}=r_{u,i}·e^{r^g_i·a_p}')
-    c1.markdown(
-        '''
-    | Обозначение | Описание                                                             |
-    | ----------- | -------------------------------------------------------------------- |
-    | $r^g_i$     | глобальный рейтинг продукта с номером $i$                            |
-    | $r_{u,i}$   | рейтинг продукта с номером $i$ у пользователя с номером $u$          |
-    | $U$         | множество номеров пользователей в транзакциях                        |
-    | $a_p$       | коэффициент фильтрации продуктов по популярности                     |
-        '''
-    )
-    c1.markdown('---')
-    map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
-                  set_text_style(f'{total_map10:.6f} ', font_size=32, tag='span') + \
-                  set_text_style(f'▲{total_map10 - cart_map10:.6f}', font_size=24, color=InstacartColors.Lime,
-                                 tag='span') + '**'
-    c1.markdown(map10_value, unsafe_allow_html=True)
-
-    col_title = set_text_style('Зависимость точности предсказаний '
-                               'от коэффициента фильтрации',
-                               font_size=24, text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_total(map10_total, total_map10, map10_total_pred, total_rate)
-    c2.pyplot(fig)
-    col_title = set_text_style('Распределение рейтингов '
-                               'ранее купленных продуктов',
-                               font_size=24, text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_total_hist(total_ratings, frequency_ratings)
-    c2.pyplot(fig)
+    # fig = plot_days(map10_days, days_map10, map10_days_pred, days_rate)
+    # c2.pyplot(fig)
+    # col_title = set_text_style('Распределение рейтингов '
+    #                            'ранее купленных продуктов',
+    #                            font_size=24, text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # fig = plot_days_hist(days_ratings, frequency_ratings)
+    # c2.pyplot(fig)
+    #
+    # st.markdown('---')
+    # st.markdown(
+    #     '**' + set_text_style('Фильтрация по номеру добавления в корзину', font_size=48, color=InstacartColors.Carrot,
+    #                           text_align='center') + '**', unsafe_allow_html=True)
+    # c1, c2 = st.columns(2, gap='large')
+    # col_title = 'Номер' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
+    #             '&nbsp;→&nbsp;Вес' + set_text_style('▼', tag='span', color=InstacartColors.IllustrationRed)
+    # col_title = set_text_style(col_title, font_size=24, text_align='center')
+    # c1.markdown(col_title, unsafe_allow_html=True)
+    # c1.markdown('---')
+    # c1.latex('\large w_{u,i,t} = e^{-d_{u,t}·a_d}·e^{-c_{u,i,t}·a_c}')
+    # c1.latex('\large r_{u,i}=\sum_{t \in T_u}s_{u,i,t}·w_{u,i,t}')
+    # c1.markdown(
+    #     '''
+    # | Обозначение | Описание                                                                                 |
+    # | ----------- | ---------------------------------------------------------------------------------------- |
+    # | $w_{u,i,t}$ | вес продукта с номером $i$ в транзакции с номером $t$ пользователя с номером $u$         |
+    # | $d_{u,t}$   | время совершения транзакции с номером $t$ пользователя с номером $u$                     |
+    # | $a_d$       | коэффициент фильтрации (положительное число)                                             |
+    # | $c_{u,i,t}$ | порядковый номер добавления продукта с номером $i$ в корзину в транзакции с номером $t$  |
+    # | $a_c$       | коэффициент фильтрации по номеру добавления продукта в корзину                           |
+    # | $r_{u,i}$   | рейтинг продукта с номером $i$ у пользователя с номером $u$                              |
+    # | $T_u$       | номера транзакций, совершенных пользователем с номером $u$                               |
+    # | $s_{u,i,t}$ | присутствие продукта с номером $i$ в транзакции с номером $t$ пользователя с номером $u$ |
+    #     '''
+    # )
+    # c1.markdown('---')
+    # map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
+    #               set_text_style(f'{cart_map10:.6f} ', font_size=32, tag='span') + \
+    #               set_text_style(f'▲{cart_map10 - days_map10:.6f}', font_size=24, color=InstacartColors.Lime,
+    #                              tag='span') + '**'
+    # c1.markdown(map10_value, unsafe_allow_html=True)
+    #
+    # col_title = set_text_style('Зависимость точности предсказаний '
+    #                            'от коэффициента фильтрации',
+    #                            font_size=24, text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # fig = plot_cart(map10_cart, cart_map10, map10_cart_pred, cart_rate)
+    # c2.pyplot(fig)
+    # col_title = set_text_style('Распределение рейтингов '
+    #                            'ранее купленных продуктов',
+    #                            font_size=24, text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # fig = plot_cart_hist(cart_ratings, frequency_ratings)
+    # c2.pyplot(fig)
+    #
+    # st.markdown('---')
+    # st.markdown('**' + set_text_style('Фильтрация по популярности', font_size=48, color=InstacartColors.Carrot,
+    #                                   text_align='center') + '**', unsafe_allow_html=True)
+    # c1, c2 = st.columns(2, gap='large')
+    # col_title = 'Популярность' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
+    #             '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
+    # col_title = set_text_style(col_title, font_size=24, text_align='center')
+    # fig = plot_missed_hist(missed_last_products)
+    # col_title = set_text_style('Распределение глобального ранга среди продуктов, '
+    #                            'не попавших в рекомендации',
+    #                            font_size=24, text_align='center')
+    # c1.markdown(col_title, unsafe_allow_html=True)
+    # c1.pyplot(fig)
+    # c1.markdown(col_title, unsafe_allow_html=True)
+    # c1.markdown('---')
+    # c1.latex('\large r^g_i={\sum_{u \in U}r_{u,i} \over |U|}')
+    # c1.latex('\large r^*_{u,i}=r_{u,i}·e^{r^g_i·a_p}')
+    # c1.markdown(
+    #     '''
+    # | Обозначение | Описание                                                             |
+    # | ----------- | -------------------------------------------------------------------- |
+    # | $r^g_i$     | глобальный рейтинг продукта с номером $i$                            |
+    # | $r_{u,i}$   | рейтинг продукта с номером $i$ у пользователя с номером $u$          |
+    # | $U$         | множество номеров пользователей в транзакциях                        |
+    # | $a_p$       | коэффициент фильтрации продуктов по популярности                     |
+    #     '''
+    # )
+    # c1.markdown('---')
+    # map10_value = set_text_style('MAP@10 = ', font_size=32, tag='span') + '**' + \
+    #               set_text_style(f'{total_map10:.6f} ', font_size=32, tag='span') + \
+    #               set_text_style(f'▲{total_map10 - cart_map10:.6f}', font_size=24, color=InstacartColors.Lime,
+    #                              tag='span') + '**'
+    # c1.markdown(map10_value, unsafe_allow_html=True)
+    #
+    # col_title = set_text_style('Зависимость точности предсказаний '
+    #                            'от коэффициента фильтрации',
+    #                            font_size=24, text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # fig = plot_total(map10_total, total_map10, map10_total_pred, total_rate)
+    # c2.pyplot(fig)
+    # col_title = set_text_style('Распределение рейтингов '
+    #                            'ранее купленных продуктов',
+    #                            font_size=24, text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # fig = plot_total_hist(total_ratings, frequency_ratings)
+    # c2.pyplot(fig)
 
 
 def filling(missed_last_products):
