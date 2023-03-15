@@ -673,8 +673,8 @@ def test():
 | Тип обработки | publicScore | privateScore | meanScore |
 |---------------|-------------|--------------|-----------|
 '''
-    for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
-        table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
+    # for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
+    #     table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
     description, publicScore, privateScore, meanScore = \
         test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[-1]
     table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
