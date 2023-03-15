@@ -614,14 +614,16 @@ def test(test_results):
 st.set_page_config(page_title='Рекомендательная система для онлайн-гипермаркета Instacart',
                    page_icon=':carrot:', layout='wide')
 
-products_reordering, products_reordering_percentages, \
-    days_bins, days_total_counts, days_reordered_counts, \
-    cart_bins, cart_total_counts, cart_reordered_counts, \
-    frequency_ratings, frequency_map_10, \
-    days_rate, days_ratings, days_map10, map10_days, map10_days_pred, \
-    cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred, \
-    total_rate, total_ratings, total_map10, map10_total, map10_total_pred, \
-    missed_last_products, test_results = load_data()
+# products_reordering, products_reordering_percentages, \
+#     days_bins, days_total_counts, days_reordered_counts, \
+#     cart_bins, cart_total_counts, cart_reordered_counts, \
+#     frequency_ratings, frequency_map_10, \
+#     days_rate, days_ratings, days_map10, map10_days, map10_days_pred, \
+#     cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred, \
+#     total_rate, total_ratings, total_map10, map10_total, map10_total_pred, \
+#     missed_last_products, test_results = load_data()
+
+load_data()
 
 with st.sidebar:
     choice = option_menu(
