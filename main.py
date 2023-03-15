@@ -8,12 +8,15 @@ from pickle import load
 from pathlib import Path
 import gdown
 
+DATA_PATH = 'data'  # Путь к папке данных
+
 
 @st.cache_data(show_spinner='Загрузка данных...')
 def load_data():
-    data_zip_file = Path('data.zip')
+    data_zip_file = Path('tmp.zip')
     gdown.cached_download(st.secrets['data']['url'], path=data_zip_file.as_posix(), postprocess=gdown.extractall,
                           fuzzy=True)
+    data_path = Path(DATA_PATH)
     data = []
     for file_name in [
         'products_reordering.dmp',
@@ -46,10 +49,10 @@ def load_data():
         # 'filled_up_map10.dmp',
         # 'total_map10.dmp',
     ]:
-        file_path = data_zip_file.with_suffix('') / file_name
+        file_path = data_path / file_name
         with open(file_path, 'rb') as fp:
             data.append(load(fp))
-    shutil.rmtree(data_zip_file.with_suffix(''))
+    shutil.rmtree(data_path)
     data_zip_file.unlink()
     return data
 
