@@ -246,7 +246,8 @@ def plot_days():
     ax.scatter(days_rate, days_map10, color=InstacartColors.IllustrationRed, linewidth=1)
     ax.axvline(days_rate, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
     ax.axhline(days_map10, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
-    ax.set_xlabel('MAP@10', fontfamily='sans serif', fontsize=10, color=InstacartColors.Kale)
+    ax.set_xlabel('$a_d$', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
+    ax.set_ylabel('MAP@10', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
     ax.grid()
     _ = ax.legend(['Реальные значения', 'Аппроксимация', 'Пик'])
     return fig
@@ -686,9 +687,8 @@ def test():
     #     kind='barh', x='description', y='meanScore', color=test_results_['color'],
     #     title={}, xlabel='', ylabel='',
     #     grid=True, fontsize=10, legend=False)
-    ax.set_xlabel('$MAP@10$', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
+    ax.set_xlabel('$MAP@10$', fontfamily='sans serif', fontsize=12, color=InstacartColors.Kale)
     _ = ax.set_xlim(0.27, 0.33)
-    ax.set_ylabel('', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
     st.pyplot(fig)
 
 
