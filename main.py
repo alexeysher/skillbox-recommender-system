@@ -11,7 +11,7 @@ import gdown
 
 @st.cache_data(show_spinner='Загрузка данных...')
 def load_data():
-    data_zip_file = Path('./data.zip')
+    data_zip_file = Path('data.zip')
     gdown.cached_download(st.secrets['data']['url'], path=data_zip_file.as_posix(), postprocess=gdown.extractall,
                           fuzzy=True)
     data = []
