@@ -46,9 +46,6 @@ total_rate = 0.
 
 missed_last_products = pd.DataFrame()
 
-test_results = pd.DataFrame()
-test_results_ = pd.DataFrame()
-
 
 def load_data(var_name: str):
     zip_file = Path(var_name).with_suffix('.zip')
@@ -76,7 +73,7 @@ def prepare_data():
         map10_days, map10_cart, map10_total, \
         map10_days_pred, map10_cart_pred, map10_total_pred, \
         days_rate, cart_rate, total_rate, \
-        missed_last_products, test_results, test_results_
+        missed_last_products
 
 
     missed_last_products = load_data('missed_last_products')
@@ -84,9 +81,6 @@ def prepare_data():
     plot_aisle_rank_hist()
     plot_in_aisle_rank_hist()
     del missed_last_products
-
-    test_results = load_data('test_results').to_dict()
-    print(test_results)
 
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
@@ -672,18 +666,13 @@ def test():
     table = '''
 | Тип обработки | publicScore | privateScore | meanScore |
 |---------------|-------------|--------------|-----------|
-'''
-    print(test_results)
-    # for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
-    #     table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
-    # description, publicScore, privateScore, meanScore = \
-    #     test_results_.loc[4, ['description', 'publicScore', 'privateScore', 'meanScore']]
-    # table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
-    #          f'|**:orange[{privateScore:.5f}]**|**:orange[{meanScore:.5f}]**|'
-    # st.markdown(table)
-    #
-    # st.markdown('---')
-    #
+|Фильтрация по частоте|0.27824|0.27662|0.27743|
+|Фильтрация по частоте и времени|0.32643|0.32439|0.32541|
+|Фильтрация по частоте, времени и номеру добавления продукта в корзину|0.32732|0.32543|0.32637|
+|Полный набор фильтраций|0.32821|0.32639|0.32730|
+|**:orange[Полный набор фильтраций и заполнение]**|**:orange[0.32822]**|**:orange[0.32640]**|**:orange[0.32731]**|'''
+    st.markdown('---')
+
     # test_results_['color'] = InstacartColors.IllustrationBlue
     # test_results_.at[test_results_['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
     # fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
