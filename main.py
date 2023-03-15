@@ -682,11 +682,6 @@ def test():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
     ax.barh(y=y, width=x, color=c)
     ax.grid()
-    # test_results_.plot(
-    #     ax=ax,
-    #     kind='barh', x='description', y='meanScore', color=test_results_['color'],
-    #     title={}, xlabel='', ylabel='',
-    #     grid=True, fontsize=10, legend=False)
     ax.set_xlabel('$MAP@10$', fontfamily='sans serif', fontsize=12, color=InstacartColors.Kale)
     _ = ax.set_xlim(0.27, 0.33)
     st.pyplot(fig)
