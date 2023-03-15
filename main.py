@@ -680,7 +680,8 @@ def test():
          'Фильтрация по частоте, времени и номеру добавления продукта в корзину', 'Полный набор фильтраций',
          'Полный набор фильтраций и заполнение']
     c = [InstacartColors.IllustrationBlue] * 4 + [InstacartColors.Carrot]
-    plt.barh(y=y, width=x, color=c)
+    fig, ax = plt.barh(y=y, width=x, color=c)
+    ax.grid()
     # test_results_.plot(
     #     ax=ax,
     #     kind='barh', x='description', y='meanScore', color=test_results_['color'],
