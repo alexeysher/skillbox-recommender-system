@@ -13,10 +13,10 @@ DATA_PATH = 'data'  # Путь к папке данных
 
 @st.cache_data(show_spinner='Загрузка данных...')
 def load_data():
-    data_zip_file = Path('tmp.zip')
-    gdown.cached_download(st.secrets['data']['url'], path=data_zip_file.as_posix(), postprocess=gdown.extractall,
-                          fuzzy=True)
-    data_path = Path(DATA_PATH)
+    # data_zip_file = Path('tmp.zip')
+    # gdown.cached_download(st.secrets['data']['url'], path=data_zip_file.as_posix(), postprocess=gdown.extractall,
+    #                       fuzzy=True)
+    # data_path = Path(DATA_PATH)
     data = []
     for file_name in [
         'products_reordering.dmp',
@@ -623,7 +623,7 @@ st.set_page_config(page_title='Рекомендательная система �
 #     total_rate, total_ratings, total_map10, map10_total, map10_total_pred, \
 #     missed_last_products, test_results = load_data()
 
-# load_data()
+load_data()
 
 with st.sidebar:
     choice = option_menu(
