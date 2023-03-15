@@ -689,6 +689,7 @@ def test():
     #     grid=True, fontsize=10, legend=False)
     ax.set_xlabel('$MAP@10$', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
     _ = ax.set_xlim(0.27, 0.33)
+    ax.set_ylabel('', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
     st.pyplot(fig)
 
 
