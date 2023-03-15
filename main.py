@@ -246,8 +246,7 @@ def plot_days():
     ax.scatter(days_rate, days_map10, color=InstacartColors.IllustrationRed, linewidth=1)
     ax.axvline(days_rate, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
     ax.axhline(days_map10, color=InstacartColors.IllustrationRed, linestyle='--', linewidth=1)
-    ax.set_xlabel('$a_d$', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
-    ax.set_ylabel('MAP@10', fontfamily='sans serif', fontsize=14, color=InstacartColors.Kale)
+    ax.set_ylabel('MAP@10', fontfamily='sans serif', fontsize=12, color=InstacartColors.Kale)
     ax.grid()
     _ = ax.legend(['Реальные значения', 'Аппроксимация', 'Пик'])
     return fig
