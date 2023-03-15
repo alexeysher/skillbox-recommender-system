@@ -11,6 +11,13 @@ import gdown
 DATA_PATH = 'data'  # Путь к папке данных
 
 products_reordering = None
+products_reordering_percentages = None
+days_bins = None
+days_total_counts = None
+days_reordered_counts = None
+cart_bins = None
+cart_total_counts = None
+cart_reordered_counts = None
 
 
 def load_data(var_name: str):
@@ -18,29 +25,48 @@ def load_data(var_name: str):
     data_file = Path(var_name).with_suffix('.dmp')
     gdown.cached_download(st.secrets['urls'][var_name], path=zip_file.as_posix(), fuzzy=True)
     shutil.unpack_archive(zip_file, '.')
-    st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
-    st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
+    # st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
+    # st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
     with open(data_file, 'rb') as fp:
         data = load(fp)
     zip_file.unlink()
     data_file.unlink()
-    st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
-    st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
+    # st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
+    # st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
     return data
 
 
 @st.cache_data(show_spinner='Загрузка данных...')
 def prepare_data():
-    global products_reordering
+    global products_reordering, products_reordering_percentages, \
+        days_bins, days_total_counts, days_reordered_counts, \
+        cart_bins, cart_total_counts, cart_reordered_counts
+
     products_reordering = load_data('products_reordering')
     plot_reordering_prop()
     del products_reordering
+    
+    products_reordering_percentages = load_data('products_reordering_percentages')
+    plot_reordering_hist()
+    del products_reordering_percentages
+    
+    days_bins = load_data('days_bins')
+    days_total_counts = load_data('days_total_counts')
+    days_reordered_counts = load_data('days_reordered_counts')
+    plot_days_reordering()
+    del days_reordered_counts
+    del days_total_counts
+    del days_bins
+
+    cart_bins = load_data('cart_bins')
+    cart_total_counts = load_data('cart_total_counts')
+    cart_reordered_counts = load_data('cart_reordered_counts')
+    plot_cart_reordering()
+    del cart_reordered_counts
+    del cart_total_counts
+    del cart_bins
+
     # for file_name in [
-    #     'products_reordering.dmp',
-    #     'products_reordering_percentages.dmp',
-    #     'days_bins.dmp',
-    #     'days_total_counts.dmp',
-    #     'days_reordered_counts.dmp',
     #     'cart_bins.dmp',
     #     'cart_total_counts.dmp',
     #     'cart_reordered_counts.dmp',
@@ -91,7 +117,7 @@ def plot_reordering_prop():
 
 
 @st.cache_resource
-def plot_reordering_hist(products_reordering_percentages):
+def plot_reordering_hist():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     _, _, bars = ax.hist(products_reordering_percentages['reordered_percentage'], bins=20)
     for bar in bars[:-4]:
@@ -107,7 +133,7 @@ def plot_reordering_hist(products_reordering_percentages):
 
 
 @st.cache_resource
-def plot_days_reordering(days_bins, days_total_counts, days_reordered_counts):
+def plot_days_reordering():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     x = [(x1 + x2) / 2 for x1, x2 in zip(days_bins[:-1], days_bins[1:])]
     y = [reordered_count / total_count * 100 for total_count, reordered_count
@@ -123,7 +149,7 @@ def plot_days_reordering(days_bins, days_total_counts, days_reordered_counts):
 
 
 @st.cache_resource
-def plot_cart_reordering(cart_bins, cart_total_counts, cart_reordered_counts):
+def plot_cart_reordering():
     fig, ax = plt.subplots(facecolor=InstacartColors.Cashew)
     x = [(x1 + x2) / 2 for x1, x2 in zip(cart_bins[:-1], cart_bins[1:])]
     y = [reordered_count / total_count * 100 for total_count, reordered_count
@@ -303,8 +329,9 @@ def goals():
     title = set_text_style('<b>Что нужно Instacart?</b>', font_size=48, color=InstacartColors.Carrot,
                            text_align='center')
     st.markdown(title, unsafe_allow_html=True)
-    title = set_text_style('<b>Система помощи пользователю, которая показывает ему те товары, которые он, скорее всего, '
-                           'захочет купить.</b>', font_size=32, color=InstacartColors.Kale)
+    title = set_text_style(
+        '<b>Система помощи пользователю, которая показывает ему те товары, которые он, скорее всего, '
+        'захочет купить.</b>', font_size=32, color=InstacartColors.Kale)
     st.markdown(title, unsafe_allow_html=True)
 
     # title = set_text_style('<b>Рекомендательная система для онлайн-гипермаркета Instacart</b>', font_size=80)
@@ -330,32 +357,32 @@ def features():
     c1, c2 = st.columns(2, gap='large')
     fig = plot_reordering_prop()
     c1.pyplot(fig)
-    # fig = plot_reordering_hist(products_reordering_percentages)
-    # c2.pyplot(fig)
-    #
-    # # Плавное изменение и Сначала важные
-    # c1, c2 = st.columns(2, gap='large')
-    # c1.markdown('---')
-    # c2.markdown('---')
-    # col_title = '**' + set_text_style('Плавное изменение', font_size=48, color=InstacartColors.Carrot,
-    #                                   text_align='center') + '**'
-    # c1.markdown(col_title, unsafe_allow_html=True)
-    # col_title = '**' + set_text_style('Сначала важные', font_size=48, color=InstacartColors.Carrot,
-    #                                   text_align='center') + '**'
-    # c2.markdown(col_title, unsafe_allow_html=True)
-    # c1, c2 = st.columns(2, gap='large')
-    # col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
-    #                            'в зависимости от времени заказа', font_size=24, text_align='center')
-    # c1.markdown(col_title, unsafe_allow_html=True)
-    # col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
-    #                            'в зависимости от номера добавления продукта в корзину', font_size=24,
-    #                            text_align='center')
-    # c2.markdown(col_title, unsafe_allow_html=True)
-    # c1, c2 = st.columns(2, gap='large')
-    # fig = plot_days_reordering(days_bins, days_total_counts, days_reordered_counts)
-    # c1.pyplot(fig)
-    # fig = plot_cart_reordering(cart_bins, cart_total_counts, cart_reordered_counts)
-    # c2.pyplot(fig)
+    fig = plot_reordering_hist()
+    c2.pyplot(fig)
+
+    # Плавное изменение и Сначала важные
+    c1, c2 = st.columns(2, gap='large')
+    c1.markdown('---')
+    c2.markdown('---')
+    col_title = '**' + set_text_style('Плавное изменение', font_size=48, color=InstacartColors.Carrot,
+                                      text_align='center') + '**'
+    c1.markdown(col_title, unsafe_allow_html=True)
+    col_title = '**' + set_text_style('Сначала важные', font_size=48, color=InstacartColors.Carrot,
+                                      text_align='center') + '**'
+    c2.markdown(col_title, unsafe_allow_html=True)
+    c1, c2 = st.columns(2, gap='large')
+    col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
+                               'в зависимости от времени заказа', font_size=24, text_align='center')
+    c1.markdown(col_title, unsafe_allow_html=True)
+    col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
+                               'в зависимости от номера добавления продукта в корзину', font_size=24,
+                               text_align='center')
+    c2.markdown(col_title, unsafe_allow_html=True)
+    c1, c2 = st.columns(2, gap='large')
+    fig = plot_days_reordering()
+    c1.pyplot(fig)
+    fig = plot_cart_reordering()
+    c2.pyplot(fig)
 
 
 def filtering(frequency_ratings, frequency_map_10,
@@ -628,15 +655,6 @@ def test(test_results):
 
 st.set_page_config(page_title='Рекомендательная система для онлайн-гипермаркета Instacart',
                    page_icon=':carrot:', layout='wide')
-
-# products_reordering, products_reordering_percentages, \
-#     days_bins, days_total_counts, days_reordered_counts, \
-#     cart_bins, cart_total_counts, cart_reordered_counts, \
-#     frequency_ratings, frequency_map_10, \
-#     days_rate, days_ratings, days_map10, map10_days, map10_days_pred, \
-#     cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred, \
-#     total_rate, total_ratings, total_map10, map10_total, map10_total_pred, \
-#     missed_last_products, test_results = load_data()
 
 prepare_data()
 
