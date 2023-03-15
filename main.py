@@ -676,7 +676,7 @@ def test():
     # for _, (description, publicScore, privateScore, meanScore) in test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[:-1].iterrows():
     #     table += f'|{description}|{publicScore:.5f}|{privateScore:.5f}|{meanScore:.5f}|\n'
     description, publicScore, privateScore, meanScore = \
-        test_results[['description', 'publicScore', 'privateScore', 'meanScore']].iloc[-1]
+        test_results[['description', 'publicScore', 'privateScore', 'meanScore'], 4]
     table += f'|**:orange[{description}]**|**:orange[{publicScore:.5f}]**' \
              f'|**:orange[{privateScore:.5f}]**|**:orange[{meanScore:.5f}]**|'
     st.markdown(table)
