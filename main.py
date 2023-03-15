@@ -548,7 +548,7 @@ def filtering():
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_cart(map10_cart, cart_map10, map10_cart_pred, cart_rate)
+    fig = plot_cart()
     c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
@@ -564,7 +564,7 @@ def filtering():
     col_title = 'Популярность' + set_text_style('▲', tag='span', color=InstacartColors.Lime) + \
                 '&nbsp;→&nbsp;Рейтинг' + set_text_style('▲', tag='span', color=InstacartColors.Lime)
     col_title = set_text_style(col_title, font_size=24, text_align='center')
-    fig = plot_missed_hist(missed_last_products)
+    fig = plot_missed_hist()
     col_title = set_text_style('Распределение глобального ранга среди продуктов, '
                                'не попавших в рекомендации',
                                font_size=24, text_align='center')
@@ -595,7 +595,7 @@ def filtering():
                                'от коэффициента фильтрации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_total(map10_total, total_map10, map10_total_pred, total_rate)
+    fig = plot_total()
     c2.pyplot(fig)
     col_title = set_text_style('Распределение рейтингов '
                                'ранее купленных продуктов',
@@ -651,14 +651,14 @@ def filling():
                                'не попавших в рекомендации',
                                font_size=24, text_align='center')
     c1.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_aisle_rank_hist(missed_last_products)
+    fig = plot_aisle_rank_hist()
     c1.pyplot(fig)
     c2.markdown('---')
     col_title = set_text_style('Распределение ранга внутри группы продуктов, '
                                'не попавших в рекомендации',
                                font_size=24, text_align='center')
     c2.markdown(col_title, unsafe_allow_html=True)
-    fig = plot_in_aisle_rank_hist(missed_last_products)
+    fig = plot_in_aisle_rank_hist()
     c2.pyplot(fig)
 
 
