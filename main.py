@@ -20,7 +20,6 @@ def load_data(var_name: str):
     shutil.unpack_archive(zip_file, '.')
     st.markdown(f'{zip_file.as_posix()}; exists = {zip_file.exists()}')
     st.markdown(f'{data_file.as_posix()}; exists = {data_file.exists()}')
-
     with open(data_file, 'rb') as fp:
         data = load(fp)
     zip_file.unlink()
@@ -315,9 +314,7 @@ def goals():
     # st.markdown(author, unsafe_allow_html=True)
 
 
-def features(products_reordering, products_reordering_percentages,
-             days_bins, days_total_counts, days_reordered_counts,
-             cart_bins, cart_total_counts, cart_reordered_counts):
+def features():
     title = '**' + set_text_style('Повторяемость', font_size=48, color=InstacartColors.Carrot,
                                   text_align='center') + '**'
     st.markdown(title, unsafe_allow_html=True)
@@ -331,32 +328,32 @@ def features(products_reordering, products_reordering_percentages,
     c1, c2 = st.columns(2, gap='large')
     fig = plot_reordering_prop()
     c1.pyplot(fig)
-    fig = plot_reordering_hist(products_reordering_percentages)
-    c2.pyplot(fig)
-
-    # Плавное изменение и Сначала важные
-    c1, c2 = st.columns(2, gap='large')
-    c1.markdown('---')
-    c2.markdown('---')
-    col_title = '**' + set_text_style('Плавное изменение', font_size=48, color=InstacartColors.Carrot,
-                                      text_align='center') + '**'
-    c1.markdown(col_title, unsafe_allow_html=True)
-    col_title = '**' + set_text_style('Сначала важные', font_size=48, color=InstacartColors.Carrot,
-                                      text_align='center') + '**'
-    c2.markdown(col_title, unsafe_allow_html=True)
-    c1, c2 = st.columns(2, gap='large')
-    col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
-                               'в зависимости от времени заказа', font_size=24, text_align='center')
-    c1.markdown(col_title, unsafe_allow_html=True)
-    col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
-                               'в зависимости от номера добавления продукта в корзину', font_size=24,
-                               text_align='center')
-    c2.markdown(col_title, unsafe_allow_html=True)
-    c1, c2 = st.columns(2, gap='large')
-    fig = plot_days_reordering(days_bins, days_total_counts, days_reordered_counts)
-    c1.pyplot(fig)
-    fig = plot_cart_reordering(cart_bins, cart_total_counts, cart_reordered_counts)
-    c2.pyplot(fig)
+    # fig = plot_reordering_hist(products_reordering_percentages)
+    # c2.pyplot(fig)
+    #
+    # # Плавное изменение и Сначала важные
+    # c1, c2 = st.columns(2, gap='large')
+    # c1.markdown('---')
+    # c2.markdown('---')
+    # col_title = '**' + set_text_style('Плавное изменение', font_size=48, color=InstacartColors.Carrot,
+    #                                   text_align='center') + '**'
+    # c1.markdown(col_title, unsafe_allow_html=True)
+    # col_title = '**' + set_text_style('Сначала важные', font_size=48, color=InstacartColors.Carrot,
+    #                                   text_align='center') + '**'
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # c1, c2 = st.columns(2, gap='large')
+    # col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
+    #                            'в зависимости от времени заказа', font_size=24, text_align='center')
+    # c1.markdown(col_title, unsafe_allow_html=True)
+    # col_title = set_text_style('Зависимость доли продуктов, присутствующих в последующих заказах, '
+    #                            'в зависимости от номера добавления продукта в корзину', font_size=24,
+    #                            text_align='center')
+    # c2.markdown(col_title, unsafe_allow_html=True)
+    # c1, c2 = st.columns(2, gap='large')
+    # fig = plot_days_reordering(days_bins, days_total_counts, days_reordered_counts)
+    # c1.pyplot(fig)
+    # fig = plot_cart_reordering(cart_bins, cart_total_counts, cart_reordered_counts)
+    # c2.pyplot(fig)
 
 
 def filtering(frequency_ratings, frequency_map_10,
@@ -674,10 +671,8 @@ match choice:
         intro()
     case "Цели и задачи":
         goals()
-    # case "Особенности":
-    #     features(products_reordering, products_reordering_percentages,
-    #              days_bins, days_total_counts, days_reordered_counts,
-    #              cart_bins, cart_total_counts, cart_reordered_counts)
+    case "Особенности":
+        features()
     # case "Фильтрация":
     #     filtering(frequency_ratings, frequency_map_10,
     #               days_rate, days_ratings, days_map10, map10_days, map10_days_pred,
