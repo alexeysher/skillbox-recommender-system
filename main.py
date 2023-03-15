@@ -389,11 +389,7 @@ def features():
     c2.pyplot(fig)
 
 
-def filtering(frequency_ratings, frequency_map_10,
-              days_rate, days_ratings, days_map10, map10_days, map10_days_pred,
-              cart_rate, cart_ratings, cart_map10, map10_cart, map10_cart_pred,
-              total_rate, total_ratings, total_map10, map10_total, map10_total_pred,
-              missed_last_products):
+def filtering():
     st.markdown('**' + set_text_style('Фильтрация по частоте', font_size=48, color=InstacartColors.Carrot,
                                       text_align='center') +
                 '**', unsafe_allow_html=True)
