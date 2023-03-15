@@ -674,17 +674,20 @@ def test():
     st.markdown(table)
     st.markdown('---')
 
-    # test_results_['color'] = InstacartColors.IllustrationBlue
-    # test_results_.at[test_results_['meanScore'].idxmax(), 'color'] = InstacartColors.Carrot
-    # fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
+    fig, ax = plt.subplots(facecolor=InstacartColors.Cashew, figsize=(8, 3))
+    x = [0.277430, 0.325410, 0.326375, 0.327300, 0.327310]
+    y = ['Фильтрация по частоте', 'Фильтрация по частоте и времени',
+         'Фильтрация по частоте, времени и номеру добавления продукта в корзину', 'Полный набор фильтраций',
+         'Полный набор фильтраций и заполнение']
+    c = [InstacartColors.IllustrationBlue] * 4 + [InstacartColors.Carrot]
     # test_results_.plot(
     #     ax=ax,
     #     kind='barh', x='description', y='meanScore', color=test_results_['color'],
     #     title={}, xlabel='', ylabel='',
     #     grid=True, fontsize=10, legend=False)
-    # ax.set_xlabel('$MAP@10$')
-    # _ = ax.set_xlim(0.27, 0.33)
-    # st.pyplot(fig)
+    ax.set_xlabel('$MAP@10$')
+    _ = ax.set_xlim(0.27, 0.33)
+    st.pyplot(fig)
 
 
 st.set_page_config(page_title='Рекомендательная система для онлайн-гипермаркета Instacart',
