@@ -21,20 +21,20 @@
 
 Дополнительно создан класс [Recommender](recommender.py), реализиующий полученную рекомендательную модель и интерфейс взаимодействия с нею. Для демонстрации  работы этого класса создан специальный [dashboard](main.py) с использованием фреймворка [Streamlit](https://streamlit.io/) и компонента [Streamlit-Option-Menu](https://github.com/victoryhb/streamlit-option-menu). Перед запуском dashboard необходимо установить данный фреймфорк и компонент: `pip install streamlit` и `pip install streamlit-option-menu`.
 
-Запуск dashbord производится путем запуска скрипта [run.py](run.py) с двумя параметрами:
+Запуск [dashboard](main.py) производится путем запуска скрипта [run.py](run.py) с двумя параметрами:
 - --data_path - путь к папке проекта, в которой будут размещаться данные (рекомендуется использовать папку `PROJECTS_PATH`/data);
 - --wokers - количество процессов параллельных вычислений (рекомендуется использовать не более 4-х при объеме оперативной памяти 16 ГБ).
 
 Обучение модели на полном наборе транзакций занимает порядка `7,5` минут.
-Формирование списка 10 рекомендованных продуктов составляет примерно:
+Время формирования списка 10 рекомендованных продуктов составляет примерно:
 - `0.23` с - для одного пользователя;
-- `23.5` с - ддля всех пользователей (100000).
+- `23.5` с - для всех пользователей (100000).
 
 ### Состав репозитория:
 - [skillbox_recommender.ipynb](skillbox_recommender.ipynb) - ноутбук с решением
 - [recommender.py](recommender.py) - модуль, включающий класс модели Recommender
 - [functions.py](functions.py) - библиотека вспомогательных функций
-- [multiproc.py](multiproc.py) - скрипт параллельных вычисления
+- [multiproc.py](multiproc.py) - скрипт параллельных вычислений
 - [average_precision.py](average_precision.py) - [библиотека](https://github.com/benhamner/Metrics/blob/9a637aea795dc6f2333f022b0863398de0a1ca77/Python/ml_metrics/average_precision.py) для расчёта усредненных метрик точности авторства [Wendy Kan](https://github.com/wendykan).
 - [kaggle.py](kaggle.py) - библиотека взаимодействия с платформой Kaggle 
 - [main.py](main.py) - скрипт dashboard для тестирования и демонстрации модели
