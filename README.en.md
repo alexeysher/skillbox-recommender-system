@@ -1,8 +1,8 @@
 [![ru](https://img.shields.io/badge/lang-ru-green.svg)](README.md)
 [![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md)
-# Skillbox. Dimploma "Recommendation system for online hypermarket Instacart"
+# Skillbox. Diploma "Recommendation system for online hypermarket Instacart"
 
-Within the dimploma, a recommendation system was developed for the online hypermarket Instacart within [competition](https://ww.kaggle.com/competitions/skillbox-recommender-system) on the platform [Kaggle](https://www.kaggle.com/).
+Within the diploma, a recommendation system was developed for the online hypermarket Instacart within [competition](https://ww.kaggle.com/competitions/skillbox-recommender-system) on the platform [Kaggle](https://www.kaggle.com/).
 The *hybrid approach* was used to create the system. The rating of the user’s products is formed from the products he has already bought, using several filtering methods:
 - by the frequency of purchases;
 - on time of purchase (number of days from date of transaction to date of last transaction);
