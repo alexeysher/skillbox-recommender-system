@@ -1,3 +1,5 @@
+[![ru](https://img.shields.io/badge/lang-ru-red.svg)](README.md)
+[![en](https://img.shields.io/badge/lang-en-green.svg)](README.en.md)
 # Skillbox. Дипломная работа "Рекомендательная система для онлайн-гипермаркета Instacart"
 
 В рамках данной дипломной работы была разработана рекомендательная система для онлайн-гипермаркета Instacart в рамках [соревнования](https://www.kaggle.com/competitions/skillbox-recommender-system) на платформе [Kaggle](https://www.kaggle.com/).
