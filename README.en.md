@@ -1,3 +1,5 @@
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](README.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](README.en.md)
 # Skillbox. Dimploma "Recommendation system for online hypermarket Instacart"
 
 Within the dimploma, a recommendation system was developed for the online hypermarket Instacart within the framework of [competition](https://ww.kaggle.com/competitions/skillbox-recommender-system) on the platform [Kaggle][Kaggle](https://www.kaggle.com/).
