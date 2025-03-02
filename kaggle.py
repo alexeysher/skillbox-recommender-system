@@ -5,29 +5,30 @@ import pandas as pd
 
 class Kaggle:
     """
-    Взаимодействие с платформой Kaggle.
+    Interaction with the Kaggle platform.
     """
 
     __COLUMNS = ['fileName', 'date', 'description', 'status', 'publicScore', 'privateScore']
 
     def __init__(self, competition: str, verbose: int = 0):
         """
-        Инициализация взаимодействия с платформой Kaggle.
-
-        Аргументы:
-        - competition: название соревнования.
-        - verbose: режим верболизации: 0 (тихий) или 1 (вывод сообщений)."""
+        Initialization of interaction with the Kaggle platform.
+        
+        Arguments:
+        - competition: competition name.
+        - verbose: verbose mode: 0 (quiet) or 1 (message output).
+        """
 
         self.__competition = competition
         self.__verbose = verbose
 
     def download_data_files(self, file_names: [str], dir_path: str):
         """
-        Скачивание файлов исходных данных.
-
-        Аргументы:
-        - files: список названий скачиваемых файлов.
-        - dir_path: путь к папке скачанных файлов.
+        Downloading source data files.
+        
+        Arguments:
+        - files: list of names of files to download.
+        - dir_path: path to the folder of downloaded files.
         """
 
         downloads_cnt = len(file_names)
@@ -61,11 +62,12 @@ class Kaggle:
         return successful_downloads_cnt
 
     def send_submission_files(self, file_paths: [str], descriptions: [str]):
-        """Отправка файлов решений на проверку.
-
-        Аргументы:
-        - descriptions: список описаний решений.
-        - file_paths: список путей к файлам решений."""
+        """Submitting solution files for review.
+        
+        Arguments:
+        - descriptions: list of solution descriptions.
+        - file_paths: list of paths to solution files.
+        """
         submissions_cnt = min(len(file_paths), len(descriptions))
         successful_submissions_cnt = 0
         failed_submissions_cnt = 0
@@ -98,15 +100,15 @@ class Kaggle:
 
     def receive_submission_scores(self, descriptions: [str]) -> pd.DataFrame | None:
         """
-        Прием результатов проверки решений.
-
-        Аргументы:
-        - descriptions: список описаний решений.
+        Receiving solution verification results.
+        
+        Arguments:
+        - descriptions: list of solution descriptions.
         """
 
         trimmed_descriptions = [description.replace('"', '') for description in descriptions]
 
-        # Запрашиваем список результатов
+        # Requesting a list of results
         if self.__verbose:
             print('Receiving data from Kaggle...')
         cmd = f'kaggle competitions submissions -c {self.__competition}'
@@ -126,7 +128,7 @@ class Kaggle:
                 print('Data received. Waiting for submissions pending complete...')
                 break
 
-        # Находим строку заголовков
+        # Find the header line
         lines = lines.split('\n')
 
         for index, line in enumerate(lines):
@@ -140,15 +142,15 @@ class Kaggle:
         if self.__verbose:
             print('Data received.')
 
-        # Находим положение колонок в тексте
+        # Find the position of the columns in the text
         header_start_positions = [line.find(column) for column in self.__COLUMNS]
         header_end_positions = header_start_positions[1:]
         header_end_positions.append(len(line))
 
-        # Оставляем строки с результатами
+        # Leave the lines with results
         lines = lines[index + 2:]
 
-        # Извлекаем данные из строк результатов
+        # Extract data from result lines
         data = [
             [
                 line[header_start_position: header_end_position].strip()
@@ -156,25 +158,25 @@ class Kaggle:
             ] for line in lines
         ]
 
-        # Создаем датасет из полученных результатов
+        # Create a dataset from the obtained results
         result = pd.DataFrame(data, columns=self.__COLUMNS)
         result['publicScore'] = pd.to_numeric(result['publicScore'], errors='coerce')
         result['privateScore'] = pd.to_numeric(result['privateScore'], errors='coerce')
         result['date'] = pd.to_datetime(result['date'])
 
-        # Оставляем только результаты отправленных предсказаний
+        # Left only the results of the sent predictions
         result = result[result['description'].isin(trimmed_descriptions)]
 
-        # Т.к. могут быть одноименные файлы, то берем самые поздние
+        # Since there may be files with the same name, we take the latest
         indexes = sorted([indexes[0] for indexes in result.groupby('description').groups.values()])
         result = result.iloc[indexes]
 
-        # Сортируем результаты в порядке отправки
+        # Sort the results in the order they were sent
         result = result.sort_values('date').reset_index(drop=True)
 
-        # Выводим результаты
+        # Display the results
         if self.__verbose:
             print(f'{result.shape[0]} out of {len(descriptions)} submission results have been received.')
 
-        # Возвращаем результат
+        # Return the result
         return result
