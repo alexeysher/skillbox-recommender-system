@@ -1,5 +1,5 @@
 """
-Модуль параллельной обработки данных.
+Parallel data processing module.
 """
 
 import argparse
@@ -13,9 +13,9 @@ import pickle
 
 def load_data(file_path):
     """
-    Загружает объект данных из бинарного файла.
-    :param file_path: путь к файлу.
-    :return: загруженный объект данных.
+    Loads a data object from a binary file.
+    :param file_path: path to the file.
+    :return: the loaded data object.
     """
     with open(file_path, 'rb') as fp:
         data = pickle.load(fp)
@@ -24,12 +24,12 @@ def load_data(file_path):
 
 def get_map10_by_days_rates(precisions: pd.Series, data_path: Path) -> pd.Series:
     """
-    Рассчитывает точность предсказаний по метрике MAP@10, полученных при фильтрации только по глубине
-    на основе информации о количестве дней до последней транзакции при разных значениях коэффициента фильтрации.
-    :param precisions: Pandas Series, индексом которого является список значений коэффициента фильтрации,
-    а значениями np.nan
-    :param data_path: путь к папке с данными.
-    :return: Pandas Series со значениями метрики ``MAP@10``
+    Calculates the accuracy of predictions for the MAP@10 metric obtained by filtering only by depth
+    based on the number of days until the last transaction for different values ​​of the coefficient filtering.
+    :param precisions: Pandas Series whose index is a list of filter coefficient values,
+    and np.nan values
+    :param data_path: path to the data folder.
+    :return: Pandas Series with ``MAP@10`` metric values
     """
 
     prior_transactions = load_data(data_path / 'prior_transactions.dmp')
@@ -50,14 +50,14 @@ def get_map10_by_days_rates(precisions: pd.Series, data_path: Path) -> pd.Series
 
 def get_map10_by_cart_rates(precisions: pd.DataFrame, data_path: Path, days_rate: float):
     """
-    Рассчитывает точность предсказаний по метрике MAP@10, полученных при фильтрации по глубине
-    на основе информации о количестве дней до последней транзакции и фильтрации по номеру добавления продукта в корзину
-    при разных значениях коэффициента фильтрации.
-    :param precisions: Pandas Series, индексом которого является список значений коэффициента фильтрации,
-    а значениями np.nan
-    :param data_path: путь к папке с данными.
-    :param days_rate: коэффициент фильтрации по времени.
-    :return: Pandas Series со значениями метрики ``MAP@10``.
+    Calculates the accuracy of predictions for the MAP@10 metric obtained by filtering by depth
+    based on the number of days until the last transaction and filtering by the product added to the cart number
+    for different values ​​of the filter coefficient.
+    :param precisions: Pandas Series whose index is a list of filter coefficient values,
+    and the values ​​are np.nan
+    :param data_path: path to the data folder.
+    :param days_rate: filter coefficient by time.
+    :return: Pandas Series with ``MAP@10`` metric values.
     """
 
     prior_transactions = load_data(data_path / 'prior_transactions.dmp')
@@ -80,15 +80,15 @@ def get_map10_by_cart_rates(precisions: pd.DataFrame, data_path: Path, days_rate
 def get_map10_by_total_rates(precisions: pd.DataFrame, data_path: Path,
                              days_rate: float, cart_rate: float):
     """
-    Рассчитывает точность предсказаний по метрике MAP@10, полученных при фильтрации по глубине
-    на основе информации о количестве дней до последней транзакции и фильтрации по номеру добавления продукта в корзину
-    при разных значениях коэффициента фильтрации по глобальному рейтингу.
-    :param precisions: Pandas Series, индексом которого является список значений коэффициента фильтрации,
-    а значениями np.nan
-    :param data_path: путь к папке с данными.
-    :param days_rate: коэффициент фильтрации по времени.
-    :param cart_rate: коэффициент фильтрации по номеру добавления товара в корзину.
-    :return: Pandas Series со значениями метрики ``MAP@10``
+    Calculates the prediction accuracy of a metric MAP@10 obtained by filtering by depth
+    based on information about the number of days before the last transaction and filtering by the product addition number to the cart
+    with different values ​​of the filtering coefficient by global rating.
+    :param precisions: Pandas Series, the index of which is a list of values ​​of the filtering coefficient,
+    and the values ​​of np.nan
+    :param data_path: path to the folder with data.
+    :param days_rate: filtering coefficient by time.
+    :param cart_rate: filtering coefficient by the product addition number to the cart.
+    :return: Pandas Series with metric values ​​``MAP@10``
     """
 
     prior_transactions = load_data(data_path / 'prior_transactions.dmp')
