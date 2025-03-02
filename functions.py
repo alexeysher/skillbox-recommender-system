@@ -7,13 +7,13 @@ from average_precision import apk, mapk
 
 def approximate_precision_by_rate(rates: np.array, precisions: np.array, deg=3):
     """
-    Аппроксимирует зависимость точности предсказаний от величины коэффициента фильтрации
-    и находит положение максимума этой функции на отрезке между крайними точками.
-
-    :param rates: 1D-массив значений коэффициента фильтрации.
-    :param precisions: значения метрики точности предсказаний.
-    :param deg: старшая степень полинома.
-    :return: значения функции аппроксимации и положение её максимума.
+    Approximates the dependence of the accuracy of predictions on the value of the filter coefficient
+    and finds the position of the maximum of this function on the segment between the extreme points.
+    
+    :param rates: 1D array of values ​​of the filter coefficient.
+    :param precisions: values ​​of the accuracy metric of predictions.
+    :param deg: the highest degree of the polynomial.
+    :return: values ​​of the approximation function and the position of its maximum.
     """
 
     coefs = polyfit(rates, precisions, deg)
@@ -34,35 +34,34 @@ def approximate_precision_by_rate(rates: np.array, precisions: np.array, deg=3):
 
 def preprocess_transactions(transactions: pd.DataFrame) -> [pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-    Добавляет в журнал транзакций заказов признак ``days_before_last_order`` - количество дней
-    до совершения последней транзакции данным пользователем.
-    Дополнительно разделяет журнал транзакций на две части: последние транзакции пользователей и предыдущие транзакции
-    пользователей.
-
-    :param transactions: журнал транзакций покупок продуктов.
-    :return: журнал транзакций покупок продуктов (кроме последних транзакций) и журнал последних транзакций
-    пользователей.
+    Adds to transaction log orders flag ``days_before_last_order`` - the number of days
+    before the last transaction by this user.
+    Additionally, it divides the transaction log into two parts: the last user transactions and previous
+    user transactions.
+    
+    :param transactions: the transaction log of product purchases.
+    :return: the transaction log of product purchases (except for the last transactions) and the last
+    user transactions.
     """
 
     transactions.sort_values(['user_id', 'order_number', 'add_to_cart_order'], inplace=True)
 
-    # Из транзакций получаем список заказов с признаком
-    # количества дней с момента предыдущего заказа (days_since_prior_order)
+    # From transactions we get a list of orders with the flag
+    # of days since the previous order (days_since_prior_order)
     orders = transactions[['user_id', 'order_number', 'days_since_prior_order']] \
         .groupby(['user_id', 'order_number']).head(1).fillna(0).astype(int)
 
-    # Получаем для каждого заказа информацию о количестве дней до следующего заказа (days_before_next_order),
-    # сместив вверх значения признака количества дней с момента предыдущего заказа (days_since_prior_order)
+    # For each order we get information about the number of days until the next order (days_before_next_order),
+    # shifting the flag values ​​of the number of days since the previous order (days_since_prior_order) up
     orders['days_before_next_order'] = orders.groupby('user_id')['days_since_prior_order'] \
         .shift(-1).fillna(0).astype(int)
 
-    # Путем накопительного суммирования получаем время до предпоследнего заказа
+    # By cumulative summation we get the time until the penultimate order
     orders['days_before_last_order'] = orders \
         .sort_values(['user_id', 'order_number'], ascending=[True, False]) \
         .groupby('user_id')['days_before_next_order'] \
         .cumsum()
 
-    #
     transactions = transactions.merge(
         orders[['user_id', 'order_number', 'days_before_last_order']],
         on=['user_id', 'order_number'], how='right').fillna(0).astype(int)
@@ -73,20 +72,20 @@ def preprocess_transactions(transactions: pd.DataFrame) -> [pd.DataFrame, pd.Dat
 
     transactions['add_to_cart_order'] = transactions.groupby(['user_id', 'days_before_last_order']).cumcount() + 1
 
-    # Выделяем предшествующие транзакции и добавляем к ним информацию время до предпоследнего заказа
+    # Select previous transactions and add information about the time until the penultimate order
     prior_transactions = transactions.loc[transactions['days_before_last_order'] > 0].copy()
 
-    # Выделяем последние транзакции
+    # Select last transactions
     last_transactions = transactions.loc[transactions['days_before_last_order'] == 0].copy()
 
-    # К предыдущим транзакциям добавляем информацию о количестве дней от предпоследней до последней транзакции
+    # Add information about the number of days from the penultimate to previous transactions until the last transaction
     prior_transactions = prior_transactions.merge(
         last_transactions.groupby('user_id')[['user_id', 'days_before_last_order']]
         .head(1).rename(columns={'days_before_last_order': 'days_before_last_order_shift'}),
         on='user_id', how='left')
     prior_transactions['days_before_last_order'] -= prior_transactions['days_before_last_order_shift']
 
-    # Составляем список списков продуктов в последних транзакциях
+    # Compile a list of product lists in recent transactions
     last_products = last_transactions[['user_id', 'product_id']] \
         .groupby('user_id')['product_id'].apply(lambda x: list(x.values)).to_list()
 
@@ -109,16 +108,16 @@ def get_weights(transactions: pd.DataFrame,
 
 def get_ratings(weights: pd.DataFrame, total_rate: float = 0.):
     """
-    Формирует таблицу рейтингов продуктов среди всех покупателей на основе транзакций их покупок.
-    Рейтинги рассчитываются на основании частоты, времени транзакций и номеров добавления продукта в корзину.
-
-    :param weights: веса продуктов в транзакциях.
-    :param total_rate: коэффициент фильтрации по популярности.
-    :return: таблица рейтингов продуктов, в которой присутствуют следующие колонки:
-
-    * ``user_id`` - уникальный идентификатор пользователя (если ``total`` равен True).
-    * ``product_id`` - уникальный идентификатор продукта.
-    * ``rating`` - рейтинг продукта.
+    Generates a table of product ratings among all customers based on their purchase transactions.
+    Ratings are calculated based on frequency, transaction time, and product add-to-cart numbers.
+    
+    :param weights: product weights in transactions.
+    :param total_rate: popularity filtering rate.
+    :return: product ratings table, which contains the following columns:
+    
+    * ``user_id`` - unique user identifier (if ``total`` is True).
+    * ``product_id`` - unique product identifier.
+    * ``rating`` - product rating.
     """
 
     ratings = weights.groupby(['user_id', 'product_id'])['weight'].sum().rename('rating').reset_index()
@@ -133,14 +132,14 @@ def get_ratings(weights: pd.DataFrame, total_rate: float = 0.):
 
 def get_total_ratings(weights: pd.DataFrame):
     """
-    Формирует таблицу рейтингов продуктов среди всех покупателей на основе транзакций их покупок.
-    Рейтинги рассчитываются на основании частоты, времени транзакций и номеров добавления продукта в корзину.
-
-    :param weights: веса продуктов в транзакциях.
-    :return: таблица рейтингов продуктов, в которой присутствуют следующие колонки:
-
-    * ``product_id`` - уникальный идентификатор продукта.
-    * ``rating`` - рейтинг продукта.
+    Generates a table of product ratings among all customers based on their purchase transactions.
+    Ratings are calculated based on frequency, transaction time, and product add-to-cart numbers.
+    
+    :param weights: product weights in transactions.
+    :return: product ratings table, which contains the following columns:
+    
+    * ``product_id`` - unique product identifier.
+    * ``rating`` - product rating.
     """
 
     ratings = weights.groupby('product_id')['weight'].sum().rename('rating').reset_index()
@@ -152,10 +151,10 @@ def get_total_ratings(weights: pd.DataFrame):
 def get_prediction(ratings: pd.DataFrame,
                    k: int = 10):
     """
-    Формирует предсказание продуктов в следующей покупке с заданным количеством элементов.
-    :param ratings: рейтинг продуктов среди пользователей с колонками ``user_id``, ``product_id``, ``rating``.
-    :param k: максимальное количество элементов в предсказании.
-    :return: датафрейм с колонками ``user_id``, ``product_id``.
+    Generates a prediction of products in the next purchase with the given number of elements.
+    :param ratings: product ratings among users with columns ``user_id``, ``product_id``, ``rating``.
+    :param k: maximum number of elements in the prediction.
+    :return: dataframe with columns ``user_id``, ``product_id``.
     """
 
     prediction = ratings.sort_values(['user_id', 'rating'], ascending=[True, False])
@@ -215,15 +214,15 @@ def get_prediction_precision(
         k: int = 10
 ):
     """
-    Рассчитывает точность предсказаний популярных продуктов. Если предсказания для всех продуктов без группировки,
-    то точность определяется метрикой ``AP@K``. В противном случае рассчитывается средняя точность предсказаний
-    среди всех групп продуктов с помощью метрики ``MAP@K`.
-    :param true: фактический список продуктов в покупке пользователя или список списков продуктов
-    в покупках пользователей.
-    :param prediction: список предсказанных продуктов в покупке пользователя или список предсказанных продуктов
-    в покупках пользователей.
-    :param k: количество элементов, на которых рассчитывается точность.
-    :return: значение метрики точности.
+    Calculates the prediction accuracy of popular products. If the predictions are for all products without grouping,
+    then the accuracy is determined by the ``AP@K`` metric. Otherwise, the average prediction accuracy
+    among all product groups is calculated using the ``MAP@K` metric.
+    :param true: the actual list of products in the user's purchase, or the list of product lists
+    in the user's purchases.
+    :param prediction: the list of predicted products in the user's purchase, or the list of predicted products
+    in the user's purchases.
+    :param k: the number of elements on which the accuracy is calculated.
+    :return: the value of the accuracy metric.
     """
     if isinstance(true[0], int):
         prediction = prediction['product_id'].to_list()
@@ -242,11 +241,13 @@ def get_prediction_table(
         prediction: pd.DataFrame,
 ):
     """
-    Преобразует датафрейм предсказаний со столбцами: ``user_id``, ``product_id`` в датафрейм табличного
-    вида с индексом из столбца 'user_id' и столбцами: 1,2,...,[кол-во элементов в предсказании] со значениями из
-    столбца ``product_id'.
-    :param prediction: датафрейм предсказаний.
-    :return: датафрейм предсказаний в табличной форме.
+    Converts a prediction dataframe with columns: ``user_id``, ``product_id`` into a tabular
+    
+    dataframe with index from column 'user_id' and columns: 1,2,...,[number of elements in prediction] with values ​​from
+    
+    column ``product_id'.
+    :param prediction: prediction dataframe.
+    :return: prediction dataframe in tabular form.
     """
     prediction['rank'] = prediction.groupby('user_id')['product_id'].cumcount() + 1
     prediction_table = prediction \
@@ -262,10 +263,10 @@ def save_kaggle_submission_csv(
         file_path: str
 ):
     """
-    Сохраняет предсказание в виде csv-файла решения для соревнования `skillbox-recommender-system` на платформе Kaggle.
-
-    :param prediction: предсказание продуктов в следующей покупке пользователей.
-    :param file_path: путь к файлу решения.
+    Saves the prediction as a solution csv file for the `skillbox-recommender-system` competition on the Kaggle platform.
+    
+    :param prediction: prediction of products in the users' next purchase.
+    :param file_path: path to the solution file.
     """
     prediction_table = get_prediction_table(prediction)
     prediction_csv = prediction_table \
