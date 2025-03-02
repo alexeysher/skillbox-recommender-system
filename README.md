@@ -24,7 +24,7 @@ The process of creating the model is given in [notebook](skillbox_recommender.ip
 In addition, the class [Recommender] (recommender.py) is created, which implements the resulting recommendatory model and interface with it. To demonstrate the work of this class, a special [dashboard](main.py) has been created using the [Streamlit](https://streamlit.io/) and [Streamlit-Option-Menu] (https:/git.hub.yhb/streamlit-optionmenu). Before starting the dashboard, you must install the given framework and components, i.e.
 
 Start dashbord by running the script [run.py](run.py) with two parameters: 
-- --data_path - the path to the project folder where the data will be placed (it is recommended to use the folder ¿PROJECTS_PATH yes/data);
+- --data_path - the path to the project folder where the data will be placed (it is recommended to use the folder `PROJECTS_PATH`/data);
 - --wokers - number of parallel computing processes (it is recommended to use no more than 4 with 16 GB of RAM).
 
 Learning a model on a complete set of transactions takes about `7.5` minutes.
