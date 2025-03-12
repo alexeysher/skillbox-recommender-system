@@ -3,8 +3,6 @@ import pandas as pd
 from pathlib import Path
 import time
 
-from shapely.speedups import disable
-
 import recommender
 from main import GC_BUCKET, GC_DATA_PATH
 
