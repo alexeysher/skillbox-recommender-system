@@ -1,6 +1,6 @@
-streamlit
-streamlit-option-menu
-matplotlib
-pandas
-numpy
-gdown
+streamlit~=1.42.0
+matplotlib~=3.10.0
+pandas~=2.2.2
+protobuf~=5.29.3
+numpy~=1.26.4
+altair~=4.2.0
