@@ -24,6 +24,7 @@ if __name__ == '__main__':
         st.Page('sections/model_building.py', title="Building a recommendation model"),
         st.Page('sections/kaggle_eval.py', title="Evaluation on Kaggle"),
         st.Page('sections/demo.py', title="Demo"),
+        st.Page('sections/summary.py', title='Summary')
     ]
 
     pg = st.navigation(pages)
