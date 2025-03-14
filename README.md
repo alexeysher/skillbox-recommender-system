@@ -35,7 +35,7 @@ The list of 10 recommended products shall be drawn up of approximately:
 
 In addition, a dashboard with description of solution and demo of recommendation system base on this one.
 The dashboard is utilising [Streamlit](https://streamlit.io) framework.
-It's deployed on Streamlit community cloud and shared by this [link](https://skillbox-data-analytics.streamlit.io). 
+It's deployed on Streamlit Community Cloud and shared by this [link](https://skillbox-data-analytics.streamlit.io). 
 
 
 ### The composition of the repository is: 

@@ -279,7 +279,7 @@ class Recommender:
         else:
             raise TypeError()
 
-        prediction = f.get_prediction_table(f.fill_up_prediction(
+        prediction = f.get_prediction_table(f.fill_in_prediction(
             f.get_prediction(ratings, k=k),
             self.__aisle_ranks, self.__inside_aisle_ranks, k))
         prediction.reset_index(inplace=True)

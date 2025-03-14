@@ -181,7 +181,7 @@ def get_inside_aisle_ranks(ratings: pd.DataFrame, products: pd.DataFrame):
     return inside_aisle_ranks
 
 
-def fill_up_prediction(prediction: pd.DataFrame, aisle_ranks: pd.DataFrame, inside_aisle_ranks: pd.DataFrame,
+def fill_in_prediction(prediction: pd.DataFrame, aisle_ranks: pd.DataFrame, inside_aisle_ranks: pd.DataFrame,
                        k: int = 10):
     sizes = prediction.groupby('user_id').size()
     small_sizes = sizes.loc[sizes < k].copy()
