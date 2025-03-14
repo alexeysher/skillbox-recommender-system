@@ -14,7 +14,7 @@ Within the model training the *optimal* values of coefficients of the last three
 In case the number of products that the user bought is less than the required size of recommendations, the recommendations are supplemented by the most popular products from the groups that he is most interested in.
 
 The trained model got the following validating scores on [Kaggle](https://www.kaggle.com/):
-- Private Score - `0.3264`
+- Private Score - `0.32640`
 - Public Score - `0.32822`
 
 The process of creating the model is given in [notebook](skillbox_recommender.ipynb). Before starting the notebook, you need to configure a little:
@@ -27,8 +27,11 @@ The list of 10 recommended products shall be drawn up of approximately:
 - `23.5` с - for all users (100000).
 
 ### The composition of the repository is: 
-- [skillbox_recommender.ipynb](skillbox_recommender.ipynb) - a notebook with solution
-- [functions.py](.py) - library of auxiliary functions.
-- [multiproc.py](multiproc.py) - a parallel computation script
+- [auxiliary.py](auxiliary.py) -
 - [average_precision.py](average_precision.py) - [library](https://github.com/benhamner/Metrics/blob/9a637aea795dc6f2333f022b0863398de0a1ca77/Python/ml_metrics/average_precision.py). [Wendy Kan](https://github.com/wendykan).
+- [functions.py](functions.py) - library of auxiliary functions.
 - [kaggle.py](kaggle.py) - Kaggle interface library
+- [main.py](main.py) -
+- [multiproc.py](multiproc.py) - a parallel computation script
+- [recommender.py](recommender.py) - 
+- [skillbox_recommender.ipynb](skillbox_recommender.ipynb) - a notebook with solution
